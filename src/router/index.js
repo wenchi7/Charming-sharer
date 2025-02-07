@@ -5,10 +5,22 @@ import WelcomeBnt from '@/components/WelcomeBnt.vue'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: WelcomeBnt },
-    { path: '/home', component: HomeView },
-    { path: '/create-post', component: CreatePost },
+    { path: '/', component: WelcomeBnt, meta: { requiresSideBar: false, requiresAuth: false } },
+    { path: '/home', component: HomeView, meta: { requiresSideBar: true, requiresAuth: true } },
+    {
+      path: '/create-post',
+      component: CreatePost,
+      meta: { requiresSideBar: true, requiresAuth: true },
+    },
   ],
 })
+// let isAuthenticated = false
+// router.beforeEach((to, from, next) => {
+//   if (to.meta.requiresAuth && !isAuthenticated) {
+//     next('/') // 未登入時，重導回 Welcome 頁面
+//   } else {
+//     next() // 允許訪問
+//   }
+// })
 
 export default router
