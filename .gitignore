@@ -20,7 +20,7 @@ coverage
 .env
 .env.*
 package-lock.json
-
+/backend/
 
 /cypress/videos/
 /cypress/screenshots/
