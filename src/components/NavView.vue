@@ -7,11 +7,6 @@
       </div>
       <div class="flex flex-col-reverse items-center mt-3 p-4 md:flex-row">
         <div class="flex">
-          <a
-            href="/home"
-            class="mr-6 lg:mr-10 underline mt-2 text-lg lg:text-xl cursor-pointer hover:text-red-600"
-            >首頁</a
-          >
           <div
             class="create-bnt flex justify-center items-center border-2 w-28 h-12 lg:w-32 rounded-xl border-gray-900 text-md text-black cursor-pointer bg-amber-300 ml-auto"
             @click="goToCreatePost"
