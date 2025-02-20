@@ -14,13 +14,6 @@ const router = createRouter({
     },
   ],
 })
-// let isAuthenticated = false
-// router.beforeEach((to, from, next) => {
-//   if (to.meta.requiresAuth && !isAuthenticated) {
-//     next('/') // 未登入時，重導回 Welcome 頁面
-//   } else {
-//     next() // 允許訪問
-//   }
-// })
+//
 
 export default router
