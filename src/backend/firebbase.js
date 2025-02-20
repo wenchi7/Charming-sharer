@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
 
+// Firebase 配置
 const firebaseConfig = {
   apiKey: 'AIzaSyACsl1MMVATDWWdmx7JSF7VyD23Y0KZz_U',
   authDomain: 'charming-sharer.firebaseapp.com',
@@ -11,6 +12,9 @@ const firebaseConfig = {
 }
 
 const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
+console.log('app', app)
+export const setupFirebase = initializeApp(firebaseConfig)
+const db = getFirestore(setupFirebase)
 
-export { auth }
+export { db }
+// export { db, addDoc, collection, getDocs, doc, getDoc }
