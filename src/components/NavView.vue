@@ -31,11 +31,15 @@
         </div>
         <div class="flex mx-4 p-4">
           <input
+            v-model="searchQuery"
             type="text"
-            class="w-52 h-8 lg:w-60 rounded-l placeholder:p-4 placeholder:text-gray-500 border border-black"
+            class="w-52 h-8 lg:w-60 rounded-l placeholder:text-gray-500 border border-black p-2"
             placeholder="請輸入關鍵字"
+            @keyup.enter="search"
           />
-          <button type="submit" class="bg-black text-white w-10 h-8 rounded ml-2">搜尋</button>
+          <button type="submit" class="bg-black text-white w-10 h-8 rounded ml-2" @click="search">
+            搜尋
+          </button>
         </div>
       </div>
     </nav>
@@ -43,6 +47,14 @@
 </template>
 <script setup>
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+
+const searchQuery = ref('')
+const search = () => {
+  if (searchQuery.value.trim()) {
+    router.push({ path: '/home', query: { search: searchQuery.value } })
+  }
+}
 
 const router = useRouter()
 const goToCreatePost = () => {

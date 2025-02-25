@@ -71,8 +71,8 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
-import { db } from '@/backend/firebbase.js'
-import { collection, addDoc } from 'firebase/firestore'
+import { db } from '@/backend/firebase.js'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 const title = ref('')
 const product = ref('')
@@ -110,6 +110,7 @@ const create = async () => {
       product: product.value,
       description: description.value,
       imageUrl: imageUrl.value,
+      createdAt: serverTimestamp(),
     })
     console.log(docRef.id)
     router.push('/home')
@@ -122,21 +123,4 @@ const create = async () => {
     imageUrl.value = ''
   }
 }
-
-// const submitPost = async () => {
-//   try {
-//     await addDoc(collection(db, 'posts'), {
-//       title: title.value,
-//       product: product.value,
-//       description: imageUrl.value,
-//     })
-//     ;(title.value = ''),
-//       (product.value = ''),
-//       (description.value = ''),
-//       (imageUrl.value = ''),
-//       alert('Post submitted!')
-//   } catch (error) {
-//     console.error('Error adding document:', error)
-//   }
-// }
 </script>

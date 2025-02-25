@@ -18,10 +18,13 @@
       >
         ◀︎
       </button>
-      <div class="flex flex-col text-center gap-14 mt-12 text-lg">
-        <a href="/home" class="text-white hover:text-red-500 cursor-pointer">首頁</a>
-        <p class="text-white hover:text-red-500 cursor-pointer">保養版</p>
-        <p class="text-white hover:text-red-500 cursor-pointer">化妝版</p>
+      <div class="flex flex-col text-left gap-24 mt-12 ml-6 text-xl">
+        <router-link to="/home" class="text-white hover:text-red-500 cursor-pointer"
+          >首頁</router-link
+        >
+
+        <p class="text-white hover:text-red-500 cursor-pointer">我的文章</p>
+
         <p class="text-white hover:text-red-500 cursor-pointer">Log out</p>
       </div>
     </div>
