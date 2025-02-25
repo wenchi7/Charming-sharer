@@ -1,12 +1,4 @@
 <template>
-  <div>
-    <a href="">
-      <div>
-        <div>
-          <p></p>
-        </div>
-      </div>
-    </a>
-  </div>
+  <div></div>
 </template>
 <script setup></script>

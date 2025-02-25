@@ -3,10 +3,10 @@ import { createPinia } from 'pinia'
 import './index.css'
 import App from './App.vue'
 import router from './router'
-import { setupFirebase } from './backend/firebbase'
+import { db } from './backend/firebase'
 const app = createApp(App)
 
-setupFirebase
+db
 app.use(createPinia())
 app.use(router)
 
