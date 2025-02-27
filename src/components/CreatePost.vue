@@ -14,7 +14,8 @@
               type="text"
               id="post-title"
               class="py-3 px-2 placeholder:px-2 rounded-lg flex w-full"
-              placeholder="Your title"
+              placeholder="Your title(10字以內)"
+              maxlength="10"
               required
             />
           </div>
@@ -34,6 +35,18 @@
               required
             />
           </div>
+          <div class="my-5">
+            <!-- 有image.url才顯示圖片,:src="O"讓O控制照片來源，讓圖片動態變化 -->
+            <input type="file" @change="uploadImage" ref="photo" />
+            <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image" class="w-72 mx-auto mt-10" />
+            <input
+              v-if="imageUrl"
+              type="button"
+              value="取消照片選取"
+              @click="canclephoto"
+              class="border border-stone-950 rounded-lg cursor-pointer px-3 py-1 mt-4 hover:bg-red-600 bg-red-500 text-white"
+            />
+          </div>
 
           <div class="flex flex-col gap-4 w-full md:flex-row">
             <label
@@ -50,17 +63,11 @@
             ></textarea>
           </div>
 
-          <div>
-            <!-- 有image.url才顯示圖片,:src="O"讓O控制照片來源，讓圖片動態變化 -->
-            <input type="file" @change="uploadImage" />
-            <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image" />
-          </div>
-
           <div class="flex justify-end absolute right-0 -bottom-14">
             <input
               type="submit"
               value="share"
-              class="border border-gray-900 px-2 py-1 rounded bg-amber-300 cursor-pointer"
+              class="border border-gray-900 px-2 py-1 rounded bg-amber-200 cursor-pointer"
             />
           </div>
         </form>
@@ -78,6 +85,8 @@ const title = ref('')
 const product = ref('')
 const description = ref('')
 const imageUrl = ref('')
+const router = useRouter()
+const photo = ref(null)
 const uploadImage = async (event) => {
   // event.target指的是input type=file的元素,files是檔案的陣列，event.target.files[0]是要拿這個input裡的檔案列的第1個
   const file = event.target.files[0]
@@ -101,7 +110,6 @@ const uploadImage = async (event) => {
     console.error('Upload failed:', error.message)
   }
 }
-const router = useRouter()
 
 const create = async () => {
   try {
@@ -122,5 +130,10 @@ const create = async () => {
     description.value = ''
     imageUrl.value = ''
   }
+}
+
+const canclephoto = () => {
+  imageUrl.value = null
+  photo.value.value = ''
 }
 </script>

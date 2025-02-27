@@ -25,14 +25,21 @@
 
         <p class="text-white hover:text-red-500 cursor-pointer">我的文章</p>
 
-        <p class="text-white hover:text-red-500 cursor-pointer">Log out</p>
+        <p
+          class="text-white hover:text-red-500 cursor-pointer"
+          v-if="userStore.user"
+          @click="userStore.logout"
+        >
+          Log out
+        </p>
       </div>
     </div>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue'
-
+import { useUserStore } from '@/stores/userStore'
+const userStore = useUserStore()
 const isSideBarOpen = ref(false)
 const tragleSideBar = (flag) => {
   isSideBarOpen.value = flag

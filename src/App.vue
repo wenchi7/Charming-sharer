@@ -21,6 +21,6 @@ const showSideBar = computed(() => {
 </script>
 <style>
 body {
-  background-color: #ffa29d;
+  background-color: #d89bc0;
 }
 </style>

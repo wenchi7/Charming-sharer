@@ -1,14 +1,17 @@
 <template>
   <div>
     <nav class="flex justify-between">
-      <div class="flex flex-col w-60 my-4 text-center text-4xl font-bold leading-[1.15]">
+      <RouterLink
+        :to="{ name: 'home' }"
+        class="flex flex-col w-60 my-4 text-center text-4xl font-bold leading-[1.15] cursor-pointer"
+      >
         <p class="rotate-[-2deg]">CHARMING</p>
         <p class="rotate-[-10deg] translate-x-4 tracking-widest">SHARER</p>
-      </div>
+      </RouterLink>
       <div class="flex flex-col-reverse items-center mt-3 p-4 md:flex-row">
         <div class="flex">
           <div
-            class="create-bnt flex justify-center items-center border-2 w-28 h-12 lg:w-32 rounded-xl border-gray-900 text-md text-black cursor-pointer bg-amber-300 ml-auto"
+            class="create-bnt flex justify-center items-center border-2 w-28 h-12 lg:w-32 rounded-xl border-gray-900 text-md text-black cursor-pointer bg-amber-200 ml-auto"
             @click="goToCreatePost"
           >
             <button class="mr-2 font-mono font-medium">CREATE</button>

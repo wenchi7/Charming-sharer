@@ -4,14 +4,14 @@
       <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div v-for="post in posts" :key="post.id">
           <div
-            class="flex flex-row h-96 rounded-3xl border-4 border-black bg-white p-6 m-2 md:flex-col"
+            class="flex flex-row h-96 rounded-3xl border-4 border-black bg-amber-50 p-6 m-2 md:flex-col"
           >
-            <div class="">
+            <div>
               <img
                 v-if="post.imageUrl"
                 :src="post.imageUrl"
                 alt="post image"
-                class="w-60 h-56 md:w-48 lg:w-56 xl:w-60 my-1 rounded-lg object-cover"
+                class="w-60 h-52 md:w-48 lg:w-52 xl:w-60 my-1 rounded-lg object-cover border border-stone-950"
               />
               <div>
                 <p class="text-2xl font-bold">{{ post.title }}</p>
@@ -36,14 +36,15 @@ import { useRoute } from 'vue-router'
 
 const posts = ref([])
 const route = useRoute()
+const searchQuery = ref(route.query.search || '')
 
-const fetchPosts = async (keyword = '') => {
+const fetchPosts = async () => {
   try {
     let q
-    if (keyword.trim()) {
+    if (searchQuery.value.trim()) {
       q = query(
         collection(db, 'posts'),
-        where('product', '>=', keyword),
+        where('product', '==', searchQuery.value),
         orderBy('createdAt', 'desc'),
       )
     } else {
@@ -56,12 +57,12 @@ const fetchPosts = async (keyword = '') => {
   }
 }
 
-onMounted(() => {
-  fetchPosts(route.query.search || '')
-})
+onMounted(fetchPosts)
 
 watchEffect(() => {
-  fetchPosts(route.query.search || '')
+  searchQuery.value = route.query.search || ''
+
+  fetchPosts()
 })
 </script>
 
