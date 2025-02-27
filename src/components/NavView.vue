@@ -32,9 +32,12 @@
             </svg>
           </div>
         </div>
+
+        <!-- 搜尋欄位 -->
         <div class="flex mx-4 p-4">
           <input
             v-model="searchQuery"
+
             type="text"
             class="w-52 h-8 lg:w-60 rounded-l placeholder:text-gray-500 border border-black p-2"
             placeholder="請輸入關鍵字"
@@ -51,12 +54,13 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { useSearchStore } from '@/stores/useSearch'
 
-const searchQuery = ref('')
+const searchStore = useSearchStore()
+const searchQuery = ref(searchStore.searchQuery)
+
 const search = () => {
-  if (searchQuery.value.trim()) {
-    router.push({ path: '/home', query: { search: searchQuery.value } })
-  }
+  searchStore.setSearchQuery(searchQuery.value)
 }
 
 const router = useRouter()
