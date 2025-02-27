@@ -36,17 +36,24 @@
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-
+import { useUserStore } from '@/stores/userStore'
 const user = ref({
   email: '',
   password: '',
 })
+
 const router = useRouter()
+const userStore = useUserStore()
 
 const userLogIn = async () => {
   const auth = getAuth()
   try {
-    await signInWithEmailAndPassword(auth, user.value.email, user.value.password)
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      user.value.email,
+      user.value.password,
+    )
+    userStore.setUser(userCredential.user)
     router.push({ name: 'home' })
   } catch (error) {
     alert('錯了喔!!')

@@ -18,6 +18,6 @@ const showButton = ref(true)
 </script>
 <style>
 .first-page {
-  background-color: #ffa29d;
+  background-color: #d89bc0;
 }
 </style>
