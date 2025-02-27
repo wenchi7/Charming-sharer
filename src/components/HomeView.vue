@@ -31,20 +31,21 @@
 <script setup>
 import { ref, onMounted, watchEffect } from 'vue'
 import { db } from '@/backend/firebase.js'
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore'
-import { useRoute } from 'vue-router'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+// import { useRoute } from 'vue-router'
+import { useSearchStore } from '@/stores/useSearch'
 
+const searchStore = useSearchStore()
 const posts = ref([])
-const route = useRoute()
-const searchQuery = ref(route.query.search || '')
+// const route = useRoute()
+// const searchQuery = ref(route.query.search || '')
 
 const fetchPosts = async () => {
   try {
     let q
-    if (searchQuery.value.trim()) {
+    if (searchStore.searchQuery.trim()) {
       q = query(
         collection(db, 'posts'),
-        where('product', '==', searchQuery.value),
         orderBy('createdAt', 'desc'),
       )
     } else {
@@ -52,6 +53,7 @@ const fetchPosts = async () => {
     }
     const querySnapshot = await getDocs(q)
     posts.value = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    .filter(post => post.product.includes(searchStore.searchQuery))
   } catch (error) {
     console.error('error message', error)
   }
@@ -60,10 +62,8 @@ const fetchPosts = async () => {
 onMounted(fetchPosts)
 
 watchEffect(() => {
-  searchQuery.value = route.query.search || ''
-
   fetchPosts()
-})
+  })
 </script>
 
 <style></style>
