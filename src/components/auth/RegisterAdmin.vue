@@ -10,7 +10,7 @@
       <div class="m-1 text-lg">
         <label for="name">使用者名字：</label>
         <input
-          type="text"
+          type="string"
           id="name"
           v-model="user.name"
           placeholder="輸入暱稱"
@@ -46,7 +46,8 @@
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-
+import { db } from '@/backend/firebase'
+import { collection,query, where, getDocs, setDoc, doc } from 'firebase/firestore'
 const router = useRouter()
 const user = ref({
   name: '',
@@ -56,6 +57,15 @@ const user = ref({
 
 const userRegistration = async () => {
   try {
+    const userRef = collection(db, 'users')
+    const q = query(userRef, where('name', '==', user.value.name))
+    const querySnapshot = await getDocs(q)
+
+    if(!querySnapshot.empty){
+      alert('使用者名稱已被使用，請選擇其他名稱')
+      return
+    }
+
     const firebaseAuth = getAuth()
     const res = await createUserWithEmailAndPassword(
       firebaseAuth,
@@ -65,11 +75,23 @@ const userRegistration = async () => {
     await updateProfile(res.user, {
       displayName: user.value.name,
     })
+
+    const userDocRef = doc(db, 'users', res.user.uid)
+    await setDoc(userDocRef,{
+      name: user.value.name,
+      email: user.value.email,
+    })
+
     router.push('/')
   } catch (error) {
-    console.error(error.message)
-
-    alert('註冊發生錯誤！')
+    if(error.code === 'auth/email-already-in-use') {
+      alert ('此信箱已被註冊過，請嘗試其他帳號')
+    }else if(error.code === 'auth/invalid-email'){
+      alert('email格式錯誤')
+    }else {
+      alert('註冊失敗請重新註冊！')
+    }
+    console.error('error message', error)
   }
 }
 </script>

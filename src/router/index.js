@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import CreatePost from '@/components/CreatePost.vue'
 import HomeView from '@/components/HomeView.vue'
 import WelcomeBnt from '@/components/WelcomeBnt.vue'
-import { getAuth } from 'firebase/auth'
+// import { getAuth } from 'firebase/auth'
+import { useAuthStore } from '@/stores/authStore'
 import RegisterAdmin from '@/components/auth/RegisterAdmin.vue'
 const router = createRouter({
   history: createWebHistory(),
@@ -27,12 +28,22 @@ const router = createRouter({
   ],
 })
 router.beforeEach((to, from, next) => {
-  const user = getAuth().currentUser
-  if (to.meta.requiresAuth && !user) {
-    next('/') // 未登入的情況下重定向
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth && !authStore.user) {
+    next('/')
   } else {
-    next() // 允許進入該頁面
+    next()
   }
 })
+
+// router.beforeEach((to, from, next) => {
+//   const user = getAuth().currentUser
+//   if (to.meta.requiresAuth && !user) {
+//     next('/') // 未登入的情況下重定向
+//   } else {
+//     next() // 允許進入該頁面
+//   }
+// })
 
 export default router
