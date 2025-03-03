@@ -36,27 +36,31 @@
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import { useUserStore } from '@/stores/userStore'
+// import { useUserStore } from '@/stores/userStore'
+import { useAuthStore } from '@/stores/authStore'
+
 const user = ref({
   email: '',
   password: '',
 })
 
 const router = useRouter()
-const userStore = useUserStore()
+const authStore = useAuthStore()
+
 
 const userLogIn = async () => {
   const auth = getAuth()
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      user.value.email,
-      user.value.password,
-    )
-    userStore.setUser(userCredential.user)
+    const res = await signInWithEmailAndPassword(auth, user.value.email, user.value.password)
+    const loggedInUser = {
+      uid: res.user.uid,
+      email: res.user.email,
+      displayName: res.user.displayName,
+    }
+    authStore.setUser(loggedInUser) // 更新 Pinia 狀態並存入 sessionStorage
     router.push({ name: 'home' })
   } catch (error) {
-    alert('錯了喔!!')
+    alert('登入失敗！請檢查帳號密碼')
     console.log(error)
   }
 }
