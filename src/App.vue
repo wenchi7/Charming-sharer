@@ -2,7 +2,7 @@
   <div class="w-full min-h-screen flex flex-col">
     <NavView />
     <div class="flex flex-col">
-      <SideBar v-if="showSideBar" class="fixed top-1/4 left-0 h-full w-32" />
+      <SideBar v-if="showSideBar" class="fixed top-1/4 left-0 h-full w-32 z-50" />
 
       <router-view></router-view>
     </div>
