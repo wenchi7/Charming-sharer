@@ -14,8 +14,7 @@
               type="text"
               id="post-title"
               class="py-3 px-2 placeholder:px-2 rounded-lg flex w-full"
-              placeholder="Your title(10字以內)"
-              maxlength="10"
+              placeholder="Your title"
               required
             />
           </div>
@@ -37,13 +36,13 @@
           </div>
           <div class="my-5">
             <!-- 有image.url才顯示圖片,:src="O"讓O控制照片來源，讓圖片動態變化 -->
-            <input type="file" @change="uploadImage" ref="photo" />
+            <input type="file" @change="handleFileChange" ref="photo" />
             <img v-if="imageUrl" :src="imageUrl" alt="Uploaded Image" class="w-72 mx-auto mt-10" />
             <input
               v-if="imageUrl"
               type="button"
               value="取消照片選取"
-              @click="canclephoto"
+              @click="cancelPhoto"
               class="border border-stone-950 rounded-lg cursor-pointer px-3 py-1 mt-4 hover:bg-red-600 bg-red-500 text-white"
             />
           </div>
@@ -67,7 +66,8 @@
             <input
               type="submit"
               value="share"
-              class="border border-gray-900 px-2 py-1 rounded bg-amber-200 cursor-pointer"
+              :disabled="photoIsLoading "
+              class="border border-gray-900 px-2 py-1 rounded bg-amber-200 cursor-pointer disabled:bg-gray-400"
             />
           </div>
         </form>
@@ -87,32 +87,62 @@ const description = ref('')
 const imageUrl = ref('')
 const router = useRouter()
 const photo = ref(null)
-const uploadImage = async (event) => {
+const photoIsLoading = ref(false)
+
+const handleFileChange = async (event) => {
   // event.target指的是input type=file的元素,files是檔案的陣列，event.target.files[0]是要拿這個input裡的檔案列的第1個
-  const file = event.target.files[0]
-  console.log(event.target.files)
-  if (!file) return
-  //如果沒有選擇任何檔案就結束函數
+  const selectedFile = event.target.files[0]
+  if(selectedFile){
+    const reader = new FileReader()
+    reader.onload = () => {
+      imageUrl.value = reader.result
+    }
+    reader.readAsDataURL(selectedFile)
+  }
+
+}
+const uploadImage = async(file)=> {
+
   //不然就創建一個FormData物件並追加資料
   const formData = new FormData()
   formData.append('file', file)
   formData.append('upload_preset', 'wenchi_preset')
   formData.append('cloud_name', 'dvzkvj8cs')
-  //使用axios發送post請求並等待結果
+
+
+  photoIsLoading.value = true
+
+
+   //使用axios發送post請求並等待結果
   try {
     const response = await axios.post(
       `https://api.cloudinary.com/v1_1/dvzkvj8cs/image/upload`,
       formData,
     )
-    console.log(response.data.secure_url)
-    imageUrl.value = response.data.secure_url
+    return response.data.secure_url
+
   } catch (error) {
     console.error('Upload failed:', error.message)
+    return null
+  }finally{
+    photoIsLoading.value = false
   }
 }
 
 const create = async () => {
+
+  if(photoIsLoading.value) return
+  if(!imageUrl.value){
+    alert('請選擇並上傳照片！')
+    return
+  }
   try {
+    const imageUrlFromCloudinary = await uploadImage(photo.value.files[0])
+    if(!imageUrlFromCloudinary){
+      alert('上傳失敗，請再試一次')
+      return
+    }
+
     const docRef = await addDoc(collection(db, 'posts'), {
       title: title.value,
       product: product.value,
@@ -132,7 +162,7 @@ const create = async () => {
   }
 }
 
-const canclephoto = () => {
+const cancelPhoto = () => {
   imageUrl.value = null
   photo.value.value = ''
 }

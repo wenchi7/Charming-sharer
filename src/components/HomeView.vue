@@ -1,10 +1,32 @@
 <template>
-  <div class="mx-10 my-8">
+  <div v-if="loading" class="flex justify-center items-center mt-48">
+    <svg
+      class="-ml-1 mr-3 h-5 w-5 animate-spin text-white "
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      >
+      <circle
+      class="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      stroke-width="4"
+      ></circle>
+      <path
+      class="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
+    </svg>
+  </div>
+  <div class="mx-10 my-8" v-else>
     <div class="container mx-auto mt-10">
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div v-for="post in posts" :key="post.id">
           <div
-            class="flex flex-row h-96 rounded-3xl border-4 border-black bg-amber-50 p-6 m-2 md:flex-col cursor-pointer"
+            class="flex flex-row h-96 rounded-3xl border-2 border-stone-800 bg-amber-50 p-6 m-2 md:flex-col cursor-pointer hover:scale-105 hover:bg-amber-100"
           >
             <div>
               <img
@@ -14,9 +36,9 @@
                 class="w-60 h-52 md:w-48 lg:w-52 xl:w-60 my-1 rounded-lg object-cover border border-stone-950 "
               />
               <div>
-                <p class="text-2xl font-bold font-mono">{{ post.title }}</p>
+                <p class="text-2xl font-bold font-mono line-clamp-2 ">{{ post.title }}</p>
 
-                <p class="mt-2 text-lg font-light line-clamp-2 after:content-['...'] text-neutral-600 font-mono">
+                <p class="mt-2 text-lg font-light line-clamp-2  text-neutral-600 font-mono">
                   {{ post.description }}
                 </p>
               </div>
@@ -34,11 +56,13 @@ import { db } from '@/backend/firebase.js'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { useSearchStore } from '@/stores/useSearch'
 
+const loading = ref(true)
 const searchStore = useSearchStore()
 const posts = ref([])
 
 const fetchPosts = async () => {
   try {
+    loading.value = true
     let q
     if (searchStore.searchQuery.trim()) {
       q = query(
@@ -54,6 +78,8 @@ const fetchPosts = async () => {
     ))
   } catch (error) {
     console.error('error message', error)
+  }finally{
+    loading.value = false
   }
 }
 
