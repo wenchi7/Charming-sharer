@@ -93,12 +93,15 @@ const handleFileChange = async (event) => {
   // event.target指的是input type=file的元素,files是檔案的陣列，event.target.files[0]是要拿這個input裡的檔案列的第1個
   const selectedFile = event.target.files[0]
   if(selectedFile){
-    const reader = new FileReader()
-    reader.onload = () => {
-      imageUrl.value = reader.result
-    }
-    reader.readAsDataURL(selectedFile)
+    imageUrl.value = URL.createObjectURL(selectedFile)
   }
+  // if(selectedFile){
+  //   const reader = new FileReader()
+  //   reader.onload = () => {
+  //     imageUrl.value = reader.result
+  //   }
+  //   reader.readAsDataURL(selectedFile)
+  // }
 
 }
 const uploadImage = async(file)=> {
@@ -147,7 +150,7 @@ const create = async () => {
       title: title.value,
       product: product.value,
       description: description.value,
-      imageUrl: imageUrl.value,
+      imageUrl: imageUrlFromCloudinary,
       createdAt: serverTimestamp(),
     })
     console.log(docRef.id)
