@@ -26,7 +26,7 @@
       <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div v-for="post in posts" :key="post.id">
           <div
-            class="flex flex-row h-96 rounded-3xl border-2 border-stone-800 bg-amber-50 p-6 m-2 md:flex-col cursor-pointer hover:scale-105 hover:bg-amber-100"
+            class="flex flex-row h-96 rounded-3xl border-2 border-stone-800 bg-amber-50 p-6 m-2 md:flex-col cursor-pointer hover:scale-105"
           >
             <div>
               <img
@@ -36,7 +36,7 @@
                 class="w-60 h-52 md:w-48 lg:w-52 xl:w-60 my-1 rounded-lg object-cover border border-stone-950 "
               />
               <div>
-                <p class="text-2xl font-bold font-mono line-clamp-2 ">{{ post.title }}</p>
+                <p class="text-xl font-bold font-mono line-clamp-2  mt-4">{{ post.title }}</p>
 
                 <p class="mt-2 text-lg font-light line-clamp-2  text-neutral-600 font-mono">
                   {{ post.description }}
