@@ -13,8 +13,9 @@
               v-model="title"
               type="text"
               id="post-title"
+              maxlength="30"
               class="py-3 px-2 placeholder:px-2 rounded-lg flex w-full"
-              placeholder="Your title"
+              placeholder="Your title(30字以內)"
               required
             />
           </div>
@@ -51,12 +52,14 @@
             <label
               for="post-content"
               class="text-xl font-semibold px-6 w-48 md:text-2xl flex-grow text-left"
+
               >description:</label
             >
             <textarea
               v-model="description"
               name="post-content"
               id="post-content"
+              placeholder="Your beauty story ✨"
               class="p-3 rounded-lg w-full min-h-64 overflow-y-scroll"
               required
             ></textarea>
@@ -79,8 +82,10 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { db } from '@/backend/firebase.js'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp} from 'firebase/firestore'
 import { useRouter } from 'vue-router'
+import { getAuth } from 'firebase/auth'
+
 const title = ref('')
 const product = ref('')
 const description = ref('')
@@ -88,20 +93,19 @@ const imageUrl = ref('')
 const router = useRouter()
 const photo = ref(null)
 const photoIsLoading = ref(false)
+const auth = getAuth()
+const user = auth.currentUser
 
 const handleFileChange = async (event) => {
   // event.target指的是input type=file的元素,files是檔案的陣列，event.target.files[0]是要拿這個input裡的檔案列的第1個
   const selectedFile = event.target.files[0]
   if(selectedFile){
-    imageUrl.value = URL.createObjectURL(selectedFile)
+    const reader = new FileReader()
+    reader.onload = () => {
+      imageUrl.value = reader.result
+    }
+    reader.readAsDataURL(selectedFile)
   }
-  // if(selectedFile){
-  //   const reader = new FileReader()
-  //   reader.onload = () => {
-  //     imageUrl.value = reader.result
-  //   }
-  //   reader.readAsDataURL(selectedFile)
-  // }
 
 }
 const uploadImage = async(file)=> {
@@ -127,8 +131,6 @@ const uploadImage = async(file)=> {
   } catch (error) {
     console.error('Upload failed:', error.message)
     return null
-  }finally{
-    photoIsLoading.value = false
   }
 }
 
@@ -150,11 +152,14 @@ const create = async () => {
       title: title.value,
       product: product.value,
       description: description.value,
-      imageUrl: imageUrlFromCloudinary,
+      imageUrl: imageUrl.value,
       createdAt: serverTimestamp(),
+      creater:user.displayName,
+      viewer:0,
     })
     console.log(docRef.id)
     router.push('/home')
+    console.log(user.displayName)
   } catch (e) {
     console.error('error message', e)
   } finally {
