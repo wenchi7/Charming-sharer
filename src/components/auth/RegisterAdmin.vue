@@ -81,7 +81,7 @@ const userRegistration = async () => {
       name: user.value.name,
       email: user.value.email,
     })
-
+alert('註冊完成！')
     router.push('/')
   } catch (error) {
     if(error.code === 'auth/email-already-in-use') {

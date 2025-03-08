@@ -22,8 +22,7 @@
         <router-link to="/home" class="text-white hover:text-red-500 cursor-pointer"
           >首頁</router-link
         >
-
-        <p class="text-white hover:text-red-500 cursor-pointer">我的文章</p>
+        <p class="text-white hover:text-red-500 cursor-pointer">My story</p>
 
         <p
           class="text-white hover:text-red-500 cursor-pointer"

@@ -59,6 +59,7 @@ const userLogIn = async () => {
     }
     authStore.setUser(loggedInUser) // 更新 Pinia 狀態並存入 sessionStorage
     router.push({ name: 'home' })
+    alert(`Welcome, ${res.user.displayName}`)
   } catch (error) {
     alert('登入失敗！請檢查帳號密碼')
     console.log(error)

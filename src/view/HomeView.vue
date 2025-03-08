@@ -1,5 +1,6 @@
 <template>
-  <div v-if="loading" class="flex justify-center items-center mt-48">
+  <NavView />
+  <div v-if="loading" class="flex justify-center items-center mt-48 flex-col gap-6">
     <svg
       class="-ml-1 mr-3 h-5 w-5 animate-spin text-white "
       xmlns="http://www.w3.org/2000/svg"
@@ -25,25 +26,29 @@
     <div class="container mx-auto mt-10">
       <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
         <div v-for="post in posts" :key="post.id">
-          <div
-            class="flex flex-row h-96 rounded-3xl border-2 border-stone-800 bg-amber-50 p-6 m-2 md:flex-col cursor-pointer hover:scale-105"
-          >
-            <div>
-              <img
-                v-if="post.imageUrl"
-                :src="post.imageUrl"
-                alt="post image"
-                class="w-60 h-52 md:w-48 lg:w-52 xl:w-60 my-1 rounded-lg object-cover border border-stone-950 "
-              />
-              <div>
-                <p class="text-xl font-bold font-mono line-clamp-2  mt-4">{{ post.title }}</p>
+          <RouterLink :to="{ name: 'StoryView', params: {id: post.id} }">
+            <div
+              class="flex flex-row h-96 mx-auto rounded-3xl border-2 border-stone-800 bg-amber-50 p-6 m-2 md:flex-col cursor-pointer hover:scale-105 "
+            >
+              <div class="w-full">
+                <div class="flex justify-center">
+                <img
+                  v-if="post.imageUrl"
+                  :src="post.imageUrl"
+                  alt="post image"
+                  class="w-60 h-52 md:w-48 lg:w-52 xl:w-60 my-1 rounded-lg object-cover border border-stone-950 "
+                />
+              </div>
+                <div>
+                  <p class="text-xl font-bold font-mono line-clamp-2  mt-4">{{ post.title }}</p>
 
-                <p class="mt-2 text-lg font-light line-clamp-2  text-neutral-600 font-mono">
-                  {{ post.description }}
-                </p>
+                  <p class="mt-2 text-lg font-light line-clamp-2  text-neutral-600 font-mono">
+                    {{ post.description }}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </RouterLink>
         </div>
       </div>
     </div>
@@ -55,10 +60,11 @@ import { ref, onMounted, watchEffect } from 'vue'
 import { db } from '@/backend/firebase.js'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { useSearchStore } from '@/stores/useSearch'
-
+import NavView from '@/components/NavView.vue'
 const loading = ref(true)
 const searchStore = useSearchStore()
 const posts = ref([])
+
 
 const fetchPosts = async () => {
   try {
@@ -83,7 +89,9 @@ const fetchPosts = async () => {
   }
 }
 
-onMounted(fetchPosts)
+onMounted(()=>{
+  fetchPosts()
+})
 
 watchEffect(() => {
   fetchPosts()

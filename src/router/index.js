@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import CreatePost from '@/components/CreatePost.vue'
-import HomeView from '@/components/HomeView.vue'
+import HomeView from '@/view/HomeView.vue'
 import WelcomeBnt from '@/components/WelcomeBnt.vue'
-// import { getAuth } from 'firebase/auth'
+
 import { useAuthStore } from '@/stores/authStore'
 import RegisterAdmin from '@/components/auth/RegisterAdmin.vue'
+import StoryView from '@/view/StoryView.vue'
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
@@ -25,8 +27,16 @@ const router = createRouter({
       component: RegisterAdmin,
       meta: { requiresSideBar: false, requiresAuth: false },
     },
+    {
+      path:'/post/:id',
+      name:'StoryView',
+      component: StoryView,
+      meta: { requiresSideBar: true, requiresAuth: true },
+    }
   ],
 })
+
+
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
