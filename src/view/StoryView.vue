@@ -25,8 +25,8 @@
         <p v-if="post.description" class="mt-10 mb-5 leading-9 text-lg indent-9">{{ post.description }}</p>
       </div>
       <div class="absolute right-10 bottom-5 flex items-center">
-        <p class=" mr-5 italic text-stone-700">觀看次數：0{{  }}</p>
-
+        <p v-if="post" class=" mr-4 italic text-stone-700">觀看次數 :</p>
+        <p v-if="post" class=" mr-10 italic text-stone-700">{{ post.viewer }}</p>
         <p v-if="post" class=" italic text-stone-700 ">Charming Sharer: {{ post.creater }}</p>
       </div>
   </div>
@@ -36,7 +36,7 @@
 import { db } from '@/backend/firebase'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { doc, getDoc} from 'firebase/firestore'
+import { doc, getDoc,increment,updateDoc} from 'firebase/firestore'
 // import { getAuth } from 'firebase/auth'
 
 
@@ -51,7 +51,13 @@ const fetchPost = async () => {
   const docSnap = await getDoc(docRef)
   if (docSnap.exists()) {
     post.value = docSnap.data()
-
+    if(post.value.viewer === undefined) {
+      post.value.viewer = 0
+    }
+    await updateDoc(docRef,{
+      viewer: increment(1)
+    }
+    )
   } else {
     console.log('文章不存在')
   }
