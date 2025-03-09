@@ -1,4 +1,4 @@
-import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { onAuthStateChanged, getAuth, signOut } from "firebase/auth";
 import { defineStore } from "pinia";
 
 export const useAuthStore = defineStore('auth',{
@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('auth',{
       onAuthStateChanged(auth,(user) => {
         if(user) {
           this.user = {
-            id: user.id,
+            id: user.uid,
             email: user.email,
             displayName:user.displayName,
           }
@@ -28,9 +28,17 @@ export const useAuthStore = defineStore('auth',{
       this.user = user
       sessionStorage.setItem('user', JSON.stringify(user))
     },
-    logout() {
-      this.user = null
-      sessionStorage.removeItem('user')
+    async logout() {
+      try {
+        const auth = getAuth();
+        const userName = this.user?.displayName || '未知user'
+        await signOut(auth);
+        this.user = null;
+        sessionStorage.removeItem('user');
+        console.log('登出成功',userName)
+      } catch(error) {
+        console.error('登出失敗',error)
+      }
     },
   }
 })
