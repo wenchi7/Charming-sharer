@@ -23,22 +23,16 @@
           >首頁</router-link
         >
         <p class="text-white hover:text-red-500 cursor-pointer">My story</p>
+        <LogOut />
 
-        <p
-          class="text-white hover:text-red-500 cursor-pointer"
-          v-if="userStore.user"
-          @click="userStore.logout"
-        >
-          Log out
-        </p>
+
       </div>
     </div>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue'
-import { useUserStore } from '@/stores/userStore'
-const userStore = useUserStore()
+import LogOut from '@/components/auth/LogOut.vue'
 const isSideBarOpen = ref(false)
 const tragleSideBar = (flag) => {
   isSideBarOpen.value = flag
