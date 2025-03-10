@@ -1,4 +1,5 @@
 <template>
+  <LogoView />
   <div
     class="relative flex flex-col mx-10 my-16  shadow-2xl rounded-lg justify-center items-end bg-amber-100 "
   >
@@ -24,10 +25,17 @@
         />
         <p v-if="post.description" class="mt-10 mb-5 leading-9 text-lg indent-9">{{ post.description }}</p>
       </div>
-      <div class="absolute right-10 bottom-5 flex items-center">
-        <p v-if="post" class=" mr-4 italic text-stone-700">觀看次數 :</p>
-        <p v-if="post" class=" mr-10 italic text-stone-700">{{ post.viewer }}</p>
-        <p v-if="post" class=" italic text-stone-700 ">Charming Sharer: {{ post.creater }}</p>
+      <div class="mt-14">
+        <!-- <div class="absolute right-10 bottom-5 flex items-center">
+          <input type="button" class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" value="編輯">
+          <input type="button" class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" value="刪除">
+        </div>
+ -->
+        <div class="absolute right-10 bottom-16 flex items-center">
+          <p v-if="post" class=" mr-4 italic text-stone-700">觀看次數 :</p>
+          <p v-if="post" class=" mr-10 italic text-stone-700">{{ post.viewer }}</p>
+          <p v-if="post" class=" italic text-stone-700 ">Charming Sharer: {{ post.creater }}</p>
+        </div>
       </div>
   </div>
 </template>
@@ -37,6 +45,7 @@ import { db } from '@/backend/firebase'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { doc, getDoc,increment,updateDoc} from 'firebase/firestore'
+import LogoView from './LogoView.vue'
 // import { getAuth } from 'firebase/auth'
 
 

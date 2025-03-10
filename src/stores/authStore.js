@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 
 export const useAuthStore = defineStore('auth',{
   state: () => ({
-    user: JSON.parse(sessionStorage.getItem('user')) || null,
+    user: JSON.parse(sessionStorage.getItem("authUser")) || null,
     isAuthReady: false,
   }),
   actions: {
@@ -14,30 +14,31 @@ export const useAuthStore = defineStore('auth',{
           this.user = {
             id: user.uid,
             email: user.email,
-            displayName:user.displayName,
+            displayName:user.displayName || '使用者',
           }
-          sessionStorage.setItem('user',JSON.stringify(this.user))
+          sessionStorage.setItem('authUser',JSON.stringify(this.user))
         }else {
           this.user = null
-          sessionStorage.removeItem('user') // 若登出則清除
+          sessionStorage.removeItem('authUser') // 若登出則清除
         }
         this.isAuthReady = true
       })
     },
     setUser(user) {
       this.user = user
-      sessionStorage.setItem('user', JSON.stringify(user))
+      sessionStorage.setItem('authUser', JSON.stringify(user))
     },
     async logout() {
       try {
         const auth = getAuth();
         const userName = this.user?.displayName || '未知user'
-        await signOut(auth);
-        this.user = null;
-        sessionStorage.removeItem('user');
+
+          await signOut(auth);
+          sessionStorage.removeItem('authUser');
+          this.user = null
         console.log('登出成功',userName)
       } catch(error) {
-        console.error('登出失敗',error)
+        console.error('登出失敗', error)
       }
     },
   }

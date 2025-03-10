@@ -1,4 +1,5 @@
 <template>
+  <LogoView />
   <div class="create-view flex justify-center mt-10">
     <div class="text-center bg-pink-200 w-9/12 min-h-auto rounded-xl mb-10 pb-10">
       <div class="m-10 flex items-center">
@@ -24,14 +25,14 @@
             <label
               for="product-name"
               class="text-xl font-semibold px-6 w-48 md:text-2xl flex-grow text-left"
-              >Prodact :
+              >Product :
             </label>
             <input
               v-model="product"
               type="text"
               id="product-name"
               class="py-3 px-2 placeholder:px-2 rounded-lg w-full"
-              placeholder="Product name"
+              placeholder="輸入完整產品名稱"
               required
             />
           </div>
@@ -85,6 +86,7 @@ import { db } from '@/backend/firebase.js'
 import { collection, addDoc, serverTimestamp} from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 import { getAuth } from 'firebase/auth'
+import LogoView from '@/view/LogoView.vue'
 
 const title = ref('')
 const product = ref('')
@@ -155,7 +157,7 @@ const create = async () => {
       imageUrl: imageUrl.value,
       createdAt: serverTimestamp(),
       creater:user.displayName,
-      viewer:0,
+      viewer:1,
     })
     console.log(docRef.id)
     router.push('/home')
