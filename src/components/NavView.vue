@@ -1,13 +1,7 @@
 <template>
   <div>
-    <nav class="flex justify-between">
-      <RouterLink
-        :to="{ name: 'home' }"
-        class="flex flex-col w-60 my-4 text-center text-4xl font-bold leading-[1.15] cursor-pointer"
-      >
-        <p class="rotate-[-2deg]">CHARMING</p>
-        <p class="rotate-[-10deg] translate-x-4 tracking-widest">SHARER</p>
-      </RouterLink>
+    <nav class="flex justify-between mt-2">
+     <LogoView />
       <div class="flex flex-col-reverse items-center mt-3 p-4 md:flex-row">
         <div class="flex">
           <div
@@ -40,7 +34,7 @@
 
             type="text"
             class="w-52 h-8 lg:w-60 rounded-l placeholder:text-gray-500 border border-black p-2"
-            placeholder="請輸入關鍵字"
+            placeholder="請輸入產品名稱"
             @keyup.enter="search"
           />
           <button type="submit" class="bg-black text-white w-10 h-8 rounded ml-2" @click="search">
@@ -55,6 +49,7 @@
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useSearchStore } from '@/stores/useSearch'
+import LogoView from '@/view/LogoView.vue'
 
 const searchStore = useSearchStore()
 const searchQuery = ref(searchStore.searchQuery)

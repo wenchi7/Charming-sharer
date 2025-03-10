@@ -22,9 +22,9 @@
       ></path>
     </svg>
   </div>
-  <div class="mx-10 my-8" v-else>
+  <div class="mx-10 my-2" v-else>
     <div class="container mx-auto mt-10">
-      <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
         <div v-for="post in posts" :key="post.id">
           <RouterLink :to="{ name: 'StoryView', params: {id: post.id} }">
             <div

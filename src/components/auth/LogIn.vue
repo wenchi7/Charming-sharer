@@ -52,14 +52,16 @@ const userLogIn = async () => {
   const auth = getAuth()
   try {
     const res = await signInWithEmailAndPassword(auth, user.value.email, user.value.password)
+    console.log('登入成功', res.user.displayName)
     const loggedInUser = {
       uid: res.user.uid,
       email: res.user.email,
       displayName: res.user.displayName,
     }
     authStore.setUser(loggedInUser) // 更新 Pinia 狀態並存入 sessionStorage
+
     router.push({ name: 'home' })
-    alert(`Welcome, ${res.user.displayName}`)
+    alert(`Welcome, ${res.user.displayName}` )
   } catch (error) {
     alert('登入失敗！請檢查帳號密碼')
     console.log(error)
