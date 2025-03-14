@@ -30,4 +30,5 @@ export const searchProduct = async (keyword) => {
   }
 }
 
+
 // export { db, addDoc, collection, getDocs, doc, getDoc }

@@ -10,6 +10,7 @@
       <div class="m-1 text-lg">
         <label for="name">使用者名字：</label>
         <input
+        required
           type="string"
           id="name"
           v-model="user.name"
@@ -20,6 +21,7 @@
       <div class="m-1 text-lg">
         <label for="email">信箱：</label>
         <input
+        required
           type="email"
           id="email"
           v-model="user.email"
@@ -30,10 +32,11 @@
       <div class="m-1 text-lg">
         <label for="password">密碼：</label>
         <input
+        required
           type="password"
           id="password"
           v-model="user.password"
-          placeholder="請輸入密碼"
+          placeholder="請輸入密碼(大於6字)"
           class="placeholder:text-sm pl-2"
         />
       </div>
@@ -57,14 +60,22 @@ const user = ref({
 
 const userRegistration = async () => {
   try {
+    if (user.value.password.length < 6) {
+      alert('密碼長度必須大於6個字元')
+      return
+    }
+    try{
     const userRef = collection(db, 'users')
-    const q = query(userRef, where('name', '==', user.value.name))
+    const q = query(userRef, where('name', '==', user.value.name.trim()))
     const querySnapshot = await getDocs(q)
 
     if(!querySnapshot.empty){
       alert('使用者名稱已被使用，請選擇其他名稱')
       return
     }
+  }catch(error){
+    console.error(error.message,error.code,error.stack)
+  }
 
     const firebaseAuth = getAuth()
     const res = await createUserWithEmailAndPassword(
@@ -89,9 +100,11 @@ alert('註冊完成！')
     }else if(error.code === 'auth/invalid-email'){
       alert('email格式錯誤')
     }else {
-      alert('註冊失敗請重新註冊！')
+      alert('註冊失敗請重新註冊！請檢查密碼是否小於6字')
     }
-    console.error('error message', error)
+    console.error('error message', error.message)
+    console.error('錯誤代碼:', error.code)
+    console.error('錯誤堆疊:', error.stack)
   }
 }
 </script>
