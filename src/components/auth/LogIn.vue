@@ -1,7 +1,7 @@
 <template>
   <div>
     <form
-      action=""
+
       class="flex flex-col justify-center items-center gap-8 w-60 h-auto"
       @submit.prevent="userLogIn"
     >

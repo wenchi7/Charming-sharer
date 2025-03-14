@@ -23,18 +23,20 @@
           :style="{transform: isClickImage ? 'scale(2)' : 'scale(1)' }"
           @click="toggleImageSize"
         />
-        <p v-if="post.description" class="mt-10 mb-5 leading-9 text-lg indent-9">{{ post.description }}</p>
+        <p v-if="post.description" class="mt-10 mb-5 w-full px-1 leading-9 break-words text-lg indent-9">{{ post.description }}</p>
       </div>
-      <div class="mt-14">
-        <!-- <div class="absolute right-10 bottom-5 flex items-center">
-          <input type="button" class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" value="編輯">
-          <input type="button" class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" value="刪除">
+      <div class="mt-14" v-if="post">
+        <div v-if="isAuthor"
+             class="absolute right-10 bottom-5 flex items-center">
+              <RouterLink :to="{name:'EditPost'}"
+               class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" >編輯</RouterLink>
+              <input type="button" class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" value="刪除">
         </div>
- -->
+
         <div class="absolute right-10 bottom-16 flex items-center">
-          <p v-if="post" class=" mr-4 italic text-stone-700">觀看次數 :</p>
-          <p v-if="post" class=" mr-10 italic text-stone-700">{{ post.viewer }}</p>
-          <p v-if="post" class=" italic text-stone-700 ">Charming Sharer: {{ post.creater }}</p>
+          <p class=" mr-4 italic text-stone-700">觀看次數 :</p>
+          <p class=" mr-10 italic text-stone-700">{{ post.viewer }}</p>
+          <p class=" italic text-stone-700 ">Charming Sharer: {{ post.creater }}</p>
         </div>
       </div>
   </div>
@@ -42,19 +44,17 @@
 
 <script setup>
 import { db } from '@/backend/firebase'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted} from 'vue'
 import { useRoute } from 'vue-router'
 import { doc, getDoc,increment,updateDoc} from 'firebase/firestore'
 import LogoView from './LogoView.vue'
-// import { getAuth } from 'firebase/auth'
-
 
 const route = useRoute()
 const post = ref(null)
 const isClickImage = ref(false)
-
-
-
+const isAuthor = ref(false)
+const authUser = sessionStorage.getItem('authUser')
+const currentUserUid = authUser? JSON.parse(authUser).id:null
 const fetchPost = async () => {
   const docRef = doc(db, 'posts', route.params.id)
   const docSnap = await getDoc(docRef)
@@ -67,10 +67,20 @@ const fetchPost = async () => {
       viewer: increment(1)
     }
     )
+    const postAuthorId = post.value.authorId
+    if (currentUserUid && currentUserUid === postAuthorId) {
+      isAuthor.value = true;
+    } else {
+      isAuthor.value = false;
+    }
+
   } else {
     console.log('文章不存在')
   }
 }
+
+
+
 
 
 const toggleImageSize = () => {
@@ -82,6 +92,7 @@ const formatDate = (timestamp) => {
   const options = {year:'numeric', month:'numeric', day:'numeric'}
   return date.toLocaleDateString('zh-TW', options)
 }
+
 
 
 onMounted(fetchPost)

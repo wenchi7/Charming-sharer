@@ -53,6 +53,7 @@
       </div>
     </div>
   </div>
+  <DeleteAuth />
 </template>
 
 <script setup>
@@ -61,10 +62,17 @@ import { db } from '@/backend/firebase.js'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { useSearchStore } from '@/stores/useSearch'
 import NavView from '@/components/NavView.vue'
+import DeleteAuth from '@/components/auth/DeleteAuth.vue'
 const loading = ref(true)
 const searchStore = useSearchStore()
 const posts = ref([])
 
+const user = sessionStorage.getItem('userLoggedIn');  // 檢查是否有 'userLoggedIn' 資料
+if (user) {
+  console.log('使用者已登入', user);
+} else {
+  console.log('使用者未登入');
+}
 
 const fetchPosts = async () => {
   try {

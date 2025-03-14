@@ -53,7 +53,6 @@
             <label
               for="post-content"
               class="text-xl font-semibold px-6 w-48 md:text-2xl flex-grow text-left"
-
               >description:</label
             >
             <textarea
@@ -67,12 +66,12 @@
           </div>
 
           <div class="flex justify-end absolute right-0 -bottom-14">
-            <input
+            <button
               type="submit"
-              value="share"
               :disabled="photoIsLoading "
               class="border border-gray-900 px-2 py-1 rounded bg-amber-200 cursor-pointer disabled:bg-gray-400"
-            />
+            >share</button>
+
           </div>
         </form>
       </div>
@@ -144,6 +143,7 @@ const create = async () => {
     return
   }
   try {
+    console.log(auth.currentUser)
     const imageUrlFromCloudinary = await uploadImage(photo.value.files[0])
     if(!imageUrlFromCloudinary){
       alert('上傳失敗，請再試一次')
@@ -157,6 +157,7 @@ const create = async () => {
       imageUrl: imageUrl.value,
       createdAt: serverTimestamp(),
       creater:user.displayName,
+      authorId:auth.currentUser.uid,
       viewer:1,
     })
     console.log(docRef.id)
