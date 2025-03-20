@@ -33,7 +33,13 @@ const router = createRouter({
       component: StoryView,
       meta: { requiresSideBar: true, requiresAuth: true },
     },
-    {path:'/editpost', name:'EditPost', component:EditPost}
+    {
+      path:'/editpost/:id',
+      name:'EditPost',
+      component: EditPost,
+      meta: { requiresSideBar: true, requiresAuth: true },
+
+    }
   ],
 })
 

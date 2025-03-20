@@ -42,7 +42,7 @@
                 <div>
                   <p class="text-xl font-bold font-mono line-clamp-2  mt-4">{{ post.title }}</p>
 
-                  <p class="mt-2 text-lg font-light line-clamp-2  text-neutral-600 font-mono">
+                  <p class="mt-1 text-lg font-light line-clamp-2  text-neutral-600 font-mono">
                     {{ post.description }}
                   </p>
                 </div>
@@ -63,16 +63,11 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { useSearchStore } from '@/stores/useSearch'
 import NavView from '@/components/NavView.vue'
 import DeleteAuth from '@/components/auth/DeleteAuth.vue'
+import { useAuthStore } from '@/stores/authStore'
 const loading = ref(true)
 const searchStore = useSearchStore()
 const posts = ref([])
-
-const user = sessionStorage.getItem('userLoggedIn');  // 檢查是否有 'userLoggedIn' 資料
-if (user) {
-  console.log('使用者已登入', user);
-} else {
-  console.log('使用者未登入');
-}
+const authStore = useAuthStore()
 
 const fetchPosts = async () => {
   try {
@@ -90,10 +85,12 @@ const fetchPosts = async () => {
     posts.value = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
     .filter(post => post.product.includes(searchStore.searchQuery
     ))
+    console.log(authStore.user.id)
   } catch (error) {
     console.error('error message', error)
   }finally{
     loading.value = false
+
   }
 }
 

@@ -1,3 +1,4 @@
+  <!-- 文章頁面 -->
 <template>
   <LogoView />
   <div
@@ -28,9 +29,10 @@
       <div class="mt-14" v-if="post">
         <div v-if="isAuthor"
              class="absolute right-10 bottom-5 flex items-center">
-              <RouterLink :to="{name:'EditPost'}"
-               class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" >編輯</RouterLink>
-              <input type="button" class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" value="刪除">
+              <RouterLink :to="{ name:'EditPost' } "
+               class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" >編輯
+              </RouterLink>
+              <button type="button" @click="confirmDelete" class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer" >刪除</button>
         </div>
 
         <div class="absolute right-10 bottom-16 flex items-center">
@@ -39,25 +41,30 @@
           <p class=" italic text-stone-700 ">Charming Sharer: {{ post.creater }}</p>
         </div>
       </div>
-  </div>
+      </div>
+
 </template>
 
 <script setup>
 import { db } from '@/backend/firebase'
 import { ref, onMounted} from 'vue'
-import { useRoute } from 'vue-router'
-import { doc, getDoc,increment,updateDoc} from 'firebase/firestore'
+import { useRoute, useRouter } from 'vue-router'
+import { doc, getDoc,increment,updateDoc,deleteDoc} from 'firebase/firestore'
 import LogoView from './LogoView.vue'
+import { useAuthStore } from '@/stores/authStore'
 
+const router = useRouter()
 const route = useRoute()
 const post = ref(null)
 const isClickImage = ref(false)
 const isAuthor = ref(false)
-const authUser = sessionStorage.getItem('authUser')
-const currentUserUid = authUser? JSON.parse(authUser).id:null
+const authStore = useAuthStore()
+
+
 const fetchPost = async () => {
   const docRef = doc(db, 'posts', route.params.id)
   const docSnap = await getDoc(docRef)
+
   if (docSnap.exists()) {
     post.value = docSnap.data()
     if(post.value.viewer === undefined) {
@@ -67,21 +74,15 @@ const fetchPost = async () => {
       viewer: increment(1)
     }
     )
-    const postAuthorId = post.value.authorId
-    if (currentUserUid && currentUserUid === postAuthorId) {
-      isAuthor.value = true;
-    } else {
-      isAuthor.value = false;
-    }
-
+   isAuthor.value = authStore.user.id && post.value && authStore.user.id === post.value.authorId;
+console.log(post.value.imageUrl)
+      //測試作者與登入者是否相同
+      // console.log(authStore.user.id)
+      // console.log(post.value.authorId)
   } else {
     console.log('文章不存在')
   }
 }
-
-
-
-
 
 const toggleImageSize = () => {
   isClickImage.value = ! isClickImage.value
@@ -93,9 +94,24 @@ const formatDate = (timestamp) => {
   return date.toLocaleDateString('zh-TW', options)
 }
 
+const confirmDelete = async () => {
+  const isConfirm = confirm('確定要刪除此文章嗎？')
 
 
-onMounted(fetchPost)
+  if(!isConfirm) return;
+  try {
+    await deleteDoc(doc(db, 'posts', route.params.id))
+    alert('文章已刪除')
+    router.push({ name: 'home' })
+  }catch(error){
+    console.log(error.message)
+  }
+}
+
+
+
+
+onMounted(fetchPost)  // 先獲取文章資料
 </script>
 
 <style scoped>

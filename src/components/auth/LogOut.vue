@@ -16,7 +16,7 @@ const router = useRouter()
 
 const handleLogout = async() => {
   try{
-  await authStore.logout()
+  await authStore.logOut()
   router.push('/')
   } catch(error) {
     alert('登出失敗！請稍後再試！')
