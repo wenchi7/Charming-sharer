@@ -143,7 +143,7 @@ const create = async () => {
     return
   }
   try {
-    console.log(auth.currentUser)
+
     const imageUrlFromCloudinary = await uploadImage(photo.value.files[0])
     if(!imageUrlFromCloudinary){
       alert('上傳失敗，請再試一次')
@@ -154,7 +154,7 @@ const create = async () => {
       title: title.value,
       product: product.value,
       description: description.value,
-      imageUrl: imageUrl.value,
+      imageUrl: imageUrlFromCloudinary,
       createdAt: serverTimestamp(),
       creater:user.displayName,
       authorId:auth.currentUser.uid,
@@ -163,6 +163,7 @@ const create = async () => {
     console.log(docRef.id)
     router.push('/home')
     console.log(user.displayName)
+    console.log(imageUrl)
   } catch (e) {
     console.error('error message', e)
   } finally {

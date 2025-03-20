@@ -12,3 +12,5 @@ const deleteAccount = () => {
 }
 
 </script>
+
+<!-- 之後放到my story裡，名字改成個人資料好了嗯嗯 -->

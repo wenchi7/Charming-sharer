@@ -14,10 +14,12 @@ import SideBar from './view/SideBar.vue'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
+
 const route = useRoute()
 const showSideBar = computed(() => {
   return route.meta.requiresSideBar
 })
+
 </script>
 <style>
 body {

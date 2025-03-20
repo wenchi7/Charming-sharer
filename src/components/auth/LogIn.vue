@@ -53,21 +53,29 @@ const userLogIn = async () => {
   try {
     const res = await signInWithEmailAndPassword(auth, user.value.email, user.value.password)
     console.log('登入成功', res.user.displayName)
+
     const loggedInUser = {
       uid: res.user.uid,
       email: res.user.email,
-      displayName: res.user.displayName,
+      displayName: res.user.displayName || '使用者',
     }
-    authStore.setUser(loggedInUser) // 更新 Pinia 狀態並存入 sessionStorage
 
+    authStore.setUser(loggedInUser) // 更新 Pinia 狀態並存入 localStorage
+
+    console.log(localStorage.getItem('authUser'))
     router.push({ name: 'home' })
+    authStore.initAuth()
     alert(`Welcome, ${res.user.displayName}` )
+console.log(authStore.user.id)
+ // 檢查是否有儲存
   } catch (error) {
     alert('登入失敗！請檢查帳號密碼')
     console.log(error)
   }
 }
+
 const goToRegister = () => {
   router.push('/register')
 }
+
 </script>
