@@ -158,15 +158,15 @@ const uploadImage = async(file)=> {
 //不然就創建一個FormData物件並追加資料
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('upload_preset', 'wenchi_preset')
-  formData.append('cloud_name', 'dvzkvj8cs')
+  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
+  formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME)
 
   photoIsLoading.value = true
  //使用axios發送post請求並等待結果
   try {
 
     const response = await axios.post(
-      `https://api.cloudinary.com/v1_1/dvzkvj8cs/image/upload`,
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
       formData,
     )
     return response.data.secure_url
