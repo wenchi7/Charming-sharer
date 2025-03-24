@@ -1,3 +1,4 @@
+<!-- CreatePost.vue -->
 <template>
   <LogoView />
   <div class="create-view flex justify-center mt-10">
@@ -97,6 +98,7 @@ const photoIsLoading = ref(false)
 const auth = getAuth()
 const user = auth.currentUser
 
+
 const handleFileChange = async (event) => {
   // event.target指的是input type=file的元素,files是檔案的陣列，event.target.files[0]是要拿這個input裡的檔案列的第1個
   const selectedFile = event.target.files[0]
@@ -109,14 +111,14 @@ const handleFileChange = async (event) => {
   }
 
 }
+
 const uploadImage = async(file)=> {
 
   //不然就創建一個FormData物件並追加資料
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('upload_preset', 'wenchi_preset')
-  formData.append('cloud_name', 'dvzkvj8cs')
-
+  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
+  formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME)
 
   photoIsLoading.value = true
 
@@ -124,7 +126,7 @@ const uploadImage = async(file)=> {
    //使用axios發送post請求並等待結果
   try {
     const response = await axios.post(
-      `https://api.cloudinary.com/v1_1/dvzkvj8cs/image/upload`,
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
       formData,
     )
     return response.data.secure_url
@@ -173,6 +175,7 @@ const create = async () => {
     imageUrl.value = ''
   }
 }
+
 
 const cancelPhoto = () => {
   imageUrl.value = null
