@@ -1,16 +1,15 @@
 <template>
-  <div class="border border-black bg-red-500 cursor-pointer w-32 mt-16 mx-auto text-center rounded-lg py-2">
-    <button @click="deleteAccount">刪除帳號</button>
+  <div class="cursor-pointer mt-16 mx-auto text-center rounded-lg py-2 text-cyan-700">
+    <button @click="deleteAccount" class="underline underline-offset-4">
+      不想繼續分享美麗故事了嗎？...刪除帳號...
+    </button>
   </div>
 </template>
 <script setup>
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/stores/authStore'
 const authStore = useAuthStore()
 
 const deleteAccount = () => {
   authStore.deleteAccount()
 }
-
 </script>
-
-<!-- 之後放到my story裡，名字改成個人資料好了嗯嗯 -->
