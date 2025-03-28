@@ -3,13 +3,13 @@
   <div
     class="relative flex flex-col mx-10 my-16 shadow-2xl rounded-lg justify-center items-end bg-amber-100"
   >
-    <RouterLink :to="{ name: 'home' }">
+    <button @click.prevent="goBack">
       <span
         v-if="post"
         class="absolute top-4 right-4 border rounded-[50%] w-8 h-8 flex justify-center pb-1 items-center bg-red-600 text-black border-black text-2xl hover:scale-110"
         >x</span
       >
-    </RouterLink>
+    </button>
     <div v-if="post" class="mt-5 p-10 flex flex-col justify-center items-center w-full">
       <h1 class="text-3xl mb-5 font-bold sm:text-4xl">{{ post.title }}</h1>
       <div v-if="post.createdAt" class="flex self-end text-sm text-gray-500 italic">
@@ -72,6 +72,14 @@ const post = ref(null)
 const isClickImage = ref(false)
 const isAuthor = ref(false)
 const authStore = useAuthStore()
+
+const goBack = () => {
+  if (route.query.from === 'my-story') {
+    router.replace({ name: 'MyStory' })
+  } else {
+    router.replace({ name: 'home' })
+  }
+}
 
 const fetchPost = async () => {
   const docRef = doc(db, 'posts', route.params.id)
@@ -146,7 +154,7 @@ const extractPublicId = (imageUrl) => {
     return null
   }
 }
-
+const API_URL = import.meta.env.VITE_API_URL
 const deleteImageFromCloudinary = async (publicId) => {
   try {
     // 先测试服务是否可用
@@ -154,7 +162,7 @@ const deleteImageFromCloudinary = async (publicId) => {
     console.log('服务测试结果:', testResponse.data)
 
     // 发送删除请求
-    const response = await axios.delete(`http://localhost:3000/api/images/${publicId}`, {
+    const response = await axios.delete(`${API_URL}/images/${publicId}`, {
       headers: {
         'Content-Type': 'application/json',
       },

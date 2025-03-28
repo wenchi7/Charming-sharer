@@ -19,13 +19,16 @@
         ◀︎
       </button>
       <div class="flex flex-col text-left gap-24 mt-12 ml-6 text-xl">
-        <router-link to="/home" class="text-white hover:text-red-500 cursor-pointer"
+        <router-link
+          to="/home"
+          @click="handleClick"
+          class="text-white hover:text-red-500 cursor-pointer"
           >首頁</router-link
         >
-        <p class="text-white hover:text-red-500 cursor-pointer">My story</p>
+        <RouterLink :to="{ name: 'MyStory' }" class="text-white hover:text-red-500 cursor-pointer">
+          My Story
+        </RouterLink>
         <LogOut />
-
-
       </div>
     </div>
   </div>
@@ -33,6 +36,14 @@
 <script setup>
 import { ref } from 'vue'
 import LogOut from '@/components/auth/LogOut.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const handleClick = () => {
+  if (router.currentRoute.value.name === 'home') {
+    router.go(0)
+  }
+}
 const isSideBarOpen = ref(false)
 const tragleSideBar = (flag) => {
   isSideBarOpen.value = flag
