@@ -41,7 +41,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const handleClick = () => {
   if (router.currentRoute.value.name === 'home') {
-    router.go(0)
+    window.location.reload()
   }
 }
 const isSideBarOpen = ref(false)

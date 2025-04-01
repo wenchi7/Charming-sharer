@@ -52,25 +52,8 @@
           </div>
         </div>
       </div>
-      <div v-if="totalPages > 1" class="flex justify-center mt-16 gap-6">
-        <button
-          class="hover:text-lg font-medium hover:text-red-500"
-          @click="currentPage--"
-          :disabled="currentPage === 1"
-        >
-          上一頁
-        </button>
-        <button class="tracking-widest text-lg cursor-auto">
-          第{{ currentPage }}頁，共{{ totalPages }}頁
-        </button>
-        <button
-          class="hover:text-lg hover:text-red-500 font-medium"
-          @click="currentPage++"
-          :disabled="currentPage === totalPages"
-        >
-          下一頁
-        </button>
-      </div>
+
+      <PostPagination v-model:current-page="currentPage" v-model:total-pages="totalPages" />
     </div>
     <div v-else>
       <p>暫無文章</p>
@@ -78,38 +61,43 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, watchEffect, computed, watch } from 'vue'
+import { ref, onMounted, computed, watchEffect } from 'vue'
 import { db } from '@/backend/firebase.js'
 import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 import { useSearchStore } from '@/stores/useSearch'
 import { useAuthStore } from '@/stores/authStore'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
+import PostPagination from './PostPagination.vue'
 
 const loading = ref(true)
 const searchStore = useSearchStore()
 const posts = ref([])
-const authStore = useAuthStore
+const authStore = useAuthStore()
+const route = useRoute()
 const currentPage = ref(1) // 當前頁數
 const postsPerPage = 6 // 每頁顯示的文章數量
-const route = useRoute()
-const router = useRouter()
+const error = ref(null)
 
 const fetchPosts = async () => {
   try {
     loading.value = true
-    let q
-    if (searchStore.searchQuery.trim()) {
-      q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
-    } else {
-      q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
-    }
+    error.value = null
+    const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
     const querySnapshot = await getDocs(q)
     posts.value = querySnapshot.docs
       .map((doc) => ({ id: doc.id, ...doc.data() }))
-      .filter((post) => post.product.includes(searchStore.searchQuery))
-    console.log(authStore.user.id)
+      .filter((post) => {
+        if (!searchStore.searchQuery.trim()) return true
+        return post.product?.toLowerCase().includes(searchStore.searchQuery.toLowerCase())
+      })
+
+    if (authStore.user) {
+      console.log(authStore.user.id)
+    }
   } catch (error) {
-    console.error('error message', error)
+    console.error('error fetching posts:', error)
+    error.value = '獲取文章時發生問題，請稍後再試'
+    posts.value = []
   } finally {
     loading.value = false
   }
@@ -125,21 +113,7 @@ const currentPagePosts = computed(() => {
   return posts.value.slice(start, end)
 })
 
-//監聽query的page
-watch(
-  () => route.query.page,
-  (newPage) => {
-    if (newPage) {
-      currentPage.value = parseInt(newPage)
-    }
-  },
-)
-
-watch(currentPage, (newPage) => {
-  router.push({
-    query: { ...route.query, page: newPage },
-  })
-})
+// 監聽query的page
 
 onMounted(() => {
   if (route.query.page) {
