@@ -1,12 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import CreatePost from '@/components/CreatePost.vue'
 import HomeView from '@/view/HomeView.vue'
 import WelcomeBnt from '@/components/WelcomeBnt.vue'
-import EditPost from '@/components/EditPost.vue'
 import { useAuthStore } from '@/stores/authStore'
-import RegisterAdmin from '@/components/auth/RegisterAdmin.vue'
-import StoryView from '@/view/StoryView.vue'
-import MyStory from '@/view/MyStory.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,30 +15,32 @@ const router = createRouter({
     },
     {
       path: '/create-post',
-      component: CreatePost,
+      name: 'createpost',
+      component: () => import('@/components/CreatePost.vue'),
       meta: { requiresSideBar: true, requiresAuth: true },
     },
     {
       path: '/register',
-      component: RegisterAdmin,
+      name: 'register',
+      component: () => import('@/components/auth/RegisterAdmin.vue'),
       meta: { requiresSideBar: true, requiresAuth: false },
     },
     {
       path: '/post/:id',
       name: 'StoryView',
-      component: StoryView,
+      component: () => import('@/view/StoryView.vue'),
       meta: { requiresSideBar: true, requiresAuth: true },
     },
     {
       path: '/editpost/:id',
       name: 'EditPost',
-      component: EditPost,
+      component: () => import('@/components/EditPost.vue'),
       meta: { requiresSideBar: true, requiresAuth: true },
     },
     {
       path: '/my-story',
       name: 'MyStory',
-      component: MyStory,
+      component: () => import('@/view/MyStory.vue'),
       meta: { requiresSideBar: true, requiresAuth: true },
     },
   ],

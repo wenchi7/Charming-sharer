@@ -22,10 +22,10 @@
         ></path>
       </svg>
     </div>
-    <div class="mx-10 my-2" v-else-if="currentPagePosts.length > 0">
+    <div class="mx-10 my-2" v-else-if="posts.length > 0">
       <div class="container mx-auto mt-10">
         <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
-          <div v-for="post in currentPagePosts" :key="post.id">
+          <div v-for="post in posts" :key="post.id">
             <RouterLink :to="{ name: 'StoryView', params: { id: post.id } }">
               <div
                 class="flex flex-row h-96 mx-auto rounded-3xl border-2 border-stone-800 bg-amber-50 p-6 m-2 md:flex-col cursor-pointer hover:scale-105"
@@ -52,77 +52,131 @@
           </div>
         </div>
       </div>
-
-      <PostPagination v-model:current-page="currentPage" v-model:total-pages="totalPages" />
+      <!-- 沒有更多文章提示 -->
+      <div v-if="!hasMore" class="text-center mt-16 text-cyan-700">沒有更多文章摟！</div>
     </div>
+
     <div v-else>
       <p>暫無文章</p>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, onMounted, computed, watchEffect } from 'vue'
+import { ref, onMounted, watch, onUnmounted, nextTick } from 'vue'
 import { db } from '@/backend/firebase.js'
-import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { collection, getDocs, query, orderBy, limit, startAfter } from 'firebase/firestore'
 import { useSearchStore } from '@/stores/useSearch'
-import { useAuthStore } from '@/stores/authStore'
-import { useRoute } from 'vue-router'
-import PostPagination from './PostPagination.vue'
 
 const loading = ref(true)
 const searchStore = useSearchStore()
 const posts = ref([])
-const authStore = useAuthStore()
-const route = useRoute()
-const currentPage = ref(1) // 當前頁數
-const postsPerPage = 6 // 每頁顯示的文章數量
-const error = ref(null)
+const lastVisible = ref(null)
+const hasMore = ref(true)
+const postsPerPage = 6
+const isLoadingMore = ref(false)
 
-const fetchPosts = async () => {
+// 檢查是否滾動到底部
+const checkScroll = async () => {
+  // 如果正在加載或沒有更多文章，直接返回
+  if (loading.value || isLoadingMore.value || !hasMore.value) return
+
+  const scrollHeight = document.scrollingElement.scrollHeight
+  const scrollTop = document.scrollingElement.scrollTop
+  const clientHeight = document.scrollingElement.clientHeight
+
+  // 當滾動到距離底部 100px 時觸發加載
+  if (scrollHeight - scrollTop - clientHeight < 200) {
+    isLoadingMore.value = true // 設置加載標記
+    console.log('觸發加載更多')
+    await fetchPosts(true)
+    isLoadingMore.value = false // 重置加載標記
+  }
+}
+const fetchPosts = async (isLoadMore = false) => {
   try {
-    loading.value = true
-    error.value = null
-    const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
-    const querySnapshot = await getDocs(q)
-    posts.value = querySnapshot.docs
-      .map((doc) => ({ id: doc.id, ...doc.data() }))
-      .filter((post) => {
-        if (!searchStore.searchQuery.trim()) return true
-        return post.product?.toLowerCase().includes(searchStore.searchQuery.toLowerCase())
-      })
+    if (!isLoadMore) {
+      loading.value = true
+      posts.value = []
+      lastVisible.value = null
+      hasMore.value = true
+    }
+    if (searchStore.searchQuery.trim() && !isLoadMore) {
+      const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'))
+      const querySnapshot = await getDocs(q)
 
-    if (authStore.user) {
-      console.log(authStore.user.id)
+      if (!querySnapshot.empty) {
+        const allPosts = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+
+        const filteredPosts = allPosts.filter((post) => {
+          const productName = (post.product || '').toLowerCase()
+          const title = (post.title || '').toLowerCase()
+          return (
+            productName.includes(searchStore.searchQuery.toLowerCase()) ||
+            title.includes(searchStore.searchQuery.toLowerCase())
+          )
+        })
+
+        posts.value = filteredPosts
+        hasMore.value = false
+      } else {
+        hasMore.value = false
+      }
+    } else {
+      // 正常的分頁加載邏輯
+      let q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(postsPerPage))
+
+      if (lastVisible.value) {
+        console.log('使用 startAfter 加載更多文章:', lastVisible.value.id)
+        q = query(q, startAfter(lastVisible.value))
+      }
+
+      const querySnapshot = await getDocs(q)
+      console.log(querySnapshot)
+      if (!querySnapshot.empty) {
+        lastVisible.value = querySnapshot.docs[querySnapshot.docs.length - 1] ?? lastVisible.value
+        hasMore.value = querySnapshot.docs.length === postsPerPage
+
+        const newPosts = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+
+        const existingPostIds = new Set(posts.value.map((post) => post.id))
+        const uniquePosts = newPosts.filter((post) => !existingPostIds.has(post.id))
+        posts.value = [...posts.value, ...uniquePosts]
+      } else {
+        hasMore.value = false
+      }
     }
   } catch (error) {
-    console.error('error fetching posts:', error)
-    error.value = '獲取文章時發生問題，請稍後再試'
-    posts.value = []
+    console.error('Error fetching posts:', error)
   } finally {
     loading.value = false
+    await nextTick()
+    console.log(' 更新後的 lastVisible:', lastVisible.value ? lastVisible.value.id : 'NULL')
   }
 }
 
-const totalPages = computed(() => {
-  return Math.ceil(posts.value.length / postsPerPage)
-})
-
-const currentPagePosts = computed(() => {
-  const start = (currentPage.value - 1) * postsPerPage
-  const end = start + postsPerPage
-  return posts.value.slice(start, end)
-})
-
 // 監聽query的page
+watch(
+  () => searchStore.searchQuery,
+  () => {
+    // 重置狀態並重新加載
+    posts.value = []
+    lastVisible.value = null
+    hasMore.value = true
+    fetchPosts()
+  },
+  { immediate: true },
+)
 
 onMounted(() => {
-  if (route.query.page) {
-    currentPage.value = parseInt(route.query.page)
-  }
-  fetchPosts()
+  window.addEventListener('scroll', checkScroll)
 })
-
-watchEffect(() => {
-  fetchPosts()
+onUnmounted(() => {
+  window.removeEventListener('scroll', checkScroll)
 })
 </script>

@@ -44,6 +44,10 @@ const handleClick = () => {
     window.location.reload()
   }
 }
+// router.go(0) 會嘗試重新加載當前頁面，但會保留 URL 中的所有查詢參數
+// 當 URL 中包含 page 參數時，Vue Router 會認為這是一個新的路由狀態，而不是簡單的頁面重新加載
+// 這導致了路由系統的衝突，因為它試圖在保持查詢參數的同時重新加載頁面
+
 const isSideBarOpen = ref(false)
 const tragleSideBar = (flag) => {
   isSideBarOpen.value = flag
