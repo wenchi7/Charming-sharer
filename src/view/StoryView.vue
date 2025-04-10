@@ -51,7 +51,16 @@
       <div class="absolute right-10 bottom-16 flex items-center">
         <p class="mr-4 italic text-stone-700">觀看次數 :</p>
         <p class="mr-10 italic text-stone-700">{{ post.viewer }}</p>
-        <p class="italic text-stone-700">Charming Sharer: {{ post.creater }}</p>
+        <p class="italic text-stone-700">
+          Charming Sharer:
+          <RouterLink
+            :to="{ name: 'UsersStory', params: { id: post.authorId } }"
+            :authorId="post.authorId"
+            class="cursor-pointer text-blue-500 underline"
+          >
+            {{ post.creater }}</RouterLink
+          >
+        </p>
       </div>
     </div>
   </div>
@@ -95,6 +104,7 @@ const fetchPost = async () => {
     })
     isAuthor.value = authStore.user.id && post.value && authStore.user.id === post.value.authorId
     console.log(post.value.imageUrl)
+    console.log('post.userId:', post.value.authorId)
     //測試作者與登入者是否相同
     // console.log(authStore.user.id)
     // console.log(post.value.authorId)

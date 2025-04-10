@@ -3,6 +3,7 @@
     <LogoView />
     <CreateBnt class="mr-16" />
   </div>
+
   <div class="flex flex-col items-center mt-10">
     <div
       class="text-2xl md:text-3xl tracking-widest font-bold font-serif bg-gradient-to-r from-emerald-400 to-blue-300 via-teal-200 w-2/3 h-14 flex justify-center items-center rounded-sm animate-pulse shadow-lg"
@@ -13,6 +14,7 @@
       <PersonalPost :authorId="currentUserId" />
     </div>
   </div>
+
   <div class="mt-20">
     <DeleteAuth v-if="showDeleteBnt" />
   </div>

@@ -22,6 +22,7 @@
         ></path>
       </svg>
     </div>
+
     <div class="mx-10 my-2 w-full" v-else-if="posts.length > 0">
       <div class="container mt-10">
         <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -58,6 +59,7 @@
         </div>
       </div>
     </div>
+
     <div v-else>
       <p>暫無貼文</p>
     </div>
@@ -92,6 +94,7 @@ const fetchPersonalPost = async () => {
     )
 
     console.log('current user id:', props.authorId)
+
     const q = query(postRef, where('authorId', '==', props.authorId), orderBy('createdAt', 'desc'))
     const querySnapshot = await getDocs(q)
     console.log('Query snapshot size:', querySnapshot.size)
