@@ -43,6 +43,12 @@ const router = createRouter({
       component: () => import('@/view/MyStory.vue'),
       meta: { requiresSideBar: true, requiresAuth: true },
     },
+    {
+      path: '/users/:id/story',
+      name: 'UsersStory',
+      component: () => import('@/components/UsersStory.vue'),
+      meta: { requiresSideBar: true, requiresAuth: true },
+    },
   ],
 })
 
