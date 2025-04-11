@@ -64,6 +64,9 @@
       <p>暫無貼文</p>
     </div>
   </div>
+  <div v-if="!isLoading" class="my-10 text-lg text-blue-900 flex justify-center">
+    <p>沒有更多貼文嘍</p>
+  </div>
 </template>
 
 <script setup>

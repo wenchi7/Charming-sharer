@@ -72,7 +72,7 @@ const searchStore = useSearchStore()
 const posts = ref([])
 const lastVisible = ref(null)
 const hasMore = ref(true)
-const postsPerPage = 6
+const postsPerPage = 9
 const isLoadingMore = ref(false)
 
 // 檢查是否滾動到底部
