@@ -2,7 +2,7 @@
   <div>
     <div class="flex">
       <div
-        class="create-bnt flex justify-center items-center border-2 w-28 h-12 lg:w-32 rounded-xl border-gray-900 text-md text-black cursor-pointer bg-amber-200 ml-auto"
+        class="create-bnt flex justify-center items-center border-2 w-28 h-12 lg:w-32 rounded-xl border-gray-900 text-md text-black cursor-pointer bg-yellow-200 ml-auto"
         @click="goToCreatePost"
       >
         <button class="mr-2 font-mono font-medium">CREATE</button>

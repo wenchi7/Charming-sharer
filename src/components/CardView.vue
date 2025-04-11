@@ -28,7 +28,7 @@
           <div v-for="post in posts" :key="post.id">
             <RouterLink :to="{ name: 'StoryView', params: { id: post.id } }">
               <div
-                class="flex flex-row h-96 mx-auto rounded-3xl border-2 border-stone-800 bg-amber-50 p-6 m-2 md:flex-col cursor-pointer hover:scale-105"
+                class="flex flex-row h-96 mx-auto rounded-3xl border-2 border-orange-200 hover:border-orange-600 bg-orange-100 p-6 m-2 md:flex-col cursor-pointer hover:scale-105"
               >
                 <div class="w-full">
                   <div class="flex justify-center">
@@ -56,8 +56,8 @@
       <div v-if="!hasMore" class="text-center mt-16 text-cyan-700">沒有更多文章摟！</div>
     </div>
 
-    <div v-else>
-      <p>暫無文章</p>
+    <div v-else class="flex justify-center items-center mt-44 text-xl">
+      <p>目前無相關文章！</p>
     </div>
   </div>
 </template>

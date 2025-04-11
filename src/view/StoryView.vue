@@ -1,7 +1,7 @@
 <template>
   <LogoView />
   <div
-    class="relative flex flex-col mx-10 my-16 shadow-2xl rounded-lg justify-center items-end bg-amber-100"
+    class="relative flex flex-col mx-10 my-16 shadow-2xl rounded-lg justify-center items-end bg-orange-100"
   >
     <button @click.prevent="goBack">
       <span
