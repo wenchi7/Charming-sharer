@@ -65,7 +65,7 @@
     </div>
     <div></div>
 
-    <div class="px-10 py-4 w-full">
+    <div class="px-10 py-4 w-full" v-if="post">
       <div class="border-t-1 border-red-300 w mb-7"></div>
       <div v-if="post?.comments?.length > 0" class="space-y-4 mb-6">
         <div v-for="comment in post.comments" :key="comment.id" class="border-b pb-4">
@@ -136,16 +136,22 @@ const goBack = () => {
   }
 }
 
-const fetchPost = async () => {
-  const docRef = doc(db, 'posts', route.params.id)
-  const docSnap = await getDoc(docRef)
+const getPostData = async () => {
+  const postRef = doc(db, 'posts', route.params.id)
+  const postDoc = await getDoc(postRef)
+  const currentComments = postDoc.data()?.comments || []
+  return { postRef, postDoc, currentComments }
+}
 
-  if (docSnap.exists()) {
-    post.value = docSnap.data()
+const fetchPost = async () => {
+  const { postRef, postDoc } = await getPostData()
+
+  if (postDoc.exists()) {
+    post.value = postDoc.data()
     if (post.value.viewer === undefined) {
       post.value.viewer = 0
     }
-    await updateDoc(docRef, {
+    await updateDoc(postRef, {
       viewer: increment(1),
     })
     isAuthor.value = authStore.user.id && post.value && authStore.user.id === post.value.authorId
@@ -153,11 +159,12 @@ const fetchPost = async () => {
     console.log('文章不存在')
   }
 }
-
+//新增評論
 const addComment = async () => {
   if (!newComment.value.trim() || !authStore.user) return
   try {
-    const postRef = doc(db, 'posts', route.params.id)
+    const { postRef, currentComments } = await getPostData()
+
     const comment = {
       id: Date.now().toString(),
       userId: authStore.user.id,
@@ -166,9 +173,6 @@ const addComment = async () => {
       createdAt: new Date().toISOString(),
     }
     console.log('Adding comment:', comment)
-
-    const postDoc = await getDoc(postRef)
-    const currentComments = postDoc.data()?.comments || []
 
     await updateDoc(postRef, {
       comments: [...currentComments, comment],
@@ -183,16 +187,12 @@ const addComment = async () => {
     console.log('error adding comment:', error)
   }
 }
-
+// 刪除自己的留言
 const deleteComment = async (commentId) => {
   const isConfirmed = confirm('確定要刪除此評論嗎？')
   if (!isConfirmed) return
   try {
-    const postRef = doc(db, 'posts', route.params.id)
-
-    // 先獲取當前文章數據
-    const postDoc = await getDoc(postRef)
-    const currentComments = postDoc.data()?.comments || []
+    const { postRef, currentComments } = await getPostData()
 
     // 過濾掉要刪除的評論
     const updatedComments = currentComments.filter((comment) => comment.id !== commentId)
