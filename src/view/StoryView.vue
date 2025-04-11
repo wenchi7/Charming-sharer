@@ -10,7 +10,7 @@
         >x</span
       >
     </button>
-    <div v-if="post" class="mt-5 p-10 flex flex-col justify-center items-center w-full">
+    <div v-if="post" class="mt-5 px-10 pt-10 pb-5 flex flex-col justify-center items-center w-full">
       <h1 class="text-3xl mb-5 font-bold sm:text-4xl">{{ post.title }}</h1>
       <div v-if="post.createdAt" class="flex self-end text-sm text-gray-500 italic">
         {{ formatDate(post.createdAt) }}發佈
@@ -31,9 +31,7 @@
       >
         {{ post.description }}
       </p>
-    </div>
-    <div class="mt-14" v-if="post">
-      <div v-if="isAuthor" class="absolute right-10 bottom-5 flex items-center">
+      <div v-if="isAuthor" class="flex w-full justify-end mt-10">
         <RouterLink
           :to="{ name: 'EditPost' }"
           class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer"
@@ -47,8 +45,10 @@
           刪除
         </button>
       </div>
+    </div>
 
-      <div class="absolute right-10 bottom-16 flex items-center">
+    <div v-if="post">
+      <div class="mr-10 flex items-center">
         <p class="mr-4 italic text-stone-700">觀看次數 :</p>
         <p class="mr-10 italic text-stone-700">{{ post.viewer }}</p>
         <p class="italic text-stone-700">
@@ -61,6 +61,51 @@
             {{ post.creater }}</RouterLink
           >
         </p>
+      </div>
+    </div>
+    <div></div>
+
+    <div class="px-10 py-4 w-full">
+      <div class="border-t-1 border-red-300 w mb-7"></div>
+      <div v-if="post?.comments?.length > 0" class="space-y-4 mb-6">
+        <div v-for="comment in post.comments" :key="comment.id" class="border-b pb-4">
+          <div class="flex justify-between items-start">
+            <div class="flex items-center justify-between w-full">
+              <p class="font-bold">{{ comment.userName }}</p>
+              <div>
+                <p class="relative text-gray-600 text-sm">{{ formatDate(comment.createdAt) }}</p>
+                <button
+                  v-if="comment.userId === authStore.user?.id"
+                  @click="deleteComment(comment.id)"
+                  class="text-red-500 hover:text-red-700 absolute right-10"
+                >
+                  刪除
+                </button>
+              </div>
+            </div>
+          </div>
+          <p class="mt-2">{{ comment.content }}</p>
+        </div>
+      </div>
+      <p v-else class="text-gray-500 mb-6">暫無評論</p>
+      <div class="gap-2">
+        <div></div>
+      </div>
+
+      <div class="flex justify-center w-full h-12 bg-white rounded-full border mt-4">
+        <textarea
+          v-model="newComment"
+          name="addComment"
+          rows="3"
+          placeholder="回覆此貼文..."
+          class="w-full px-4 py-3 bg-transparent rounded-l-full focus:outline-none focus:ring-2 focus:ring-red-300 appearance-none"
+        ></textarea>
+        <button
+          @click="addComment"
+          class="bg-red-400 text-black rounded-r-full w-16 hover:bg-red-500"
+        >
+          發表
+        </button>
       </div>
     </div>
   </div>
@@ -81,6 +126,7 @@ const post = ref(null)
 const isClickImage = ref(false)
 const isAuthor = ref(false)
 const authStore = useAuthStore()
+const newComment = ref('')
 
 const goBack = () => {
   if (route.query.from === 'my-story') {
@@ -103,13 +149,63 @@ const fetchPost = async () => {
       viewer: increment(1),
     })
     isAuthor.value = authStore.user.id && post.value && authStore.user.id === post.value.authorId
-    console.log(post.value.imageUrl)
-    console.log('post.userId:', post.value.authorId)
-    //測試作者與登入者是否相同
-    // console.log(authStore.user.id)
-    // console.log(post.value.authorId)
   } else {
     console.log('文章不存在')
+  }
+}
+
+const addComment = async () => {
+  if (!newComment.value.trim() || !authStore.user) return
+  try {
+    const postRef = doc(db, 'posts', route.params.id)
+    const comment = {
+      id: Date.now().toString(),
+      userId: authStore.user.id,
+      userName: authStore.user.displayName,
+      content: newComment.value,
+      createdAt: new Date().toISOString(),
+    }
+    console.log('Adding comment:', comment)
+
+    const postDoc = await getDoc(postRef)
+    const currentComments = postDoc.data()?.comments || []
+
+    await updateDoc(postRef, {
+      comments: [...currentComments, comment],
+    })
+    if (!post.value.comments) {
+      post.value.comments = []
+    }
+    post.value.comments.push(comment)
+    newComment.value = ''
+    await fetchPost()
+  } catch (error) {
+    console.log('error adding comment:', error)
+  }
+}
+
+const deleteComment = async (commentId) => {
+  const isConfirmed = confirm('確定要刪除此評論嗎？')
+  if (!isConfirmed) return
+  try {
+    const postRef = doc(db, 'posts', route.params.id)
+
+    // 先獲取當前文章數據
+    const postDoc = await getDoc(postRef)
+    const currentComments = postDoc.data()?.comments || []
+
+    // 過濾掉要刪除的評論
+    const updatedComments = currentComments.filter((comment) => comment.id !== commentId)
+
+    // 更新文章
+    await updateDoc(postRef, {
+      comments: updatedComments,
+    })
+
+    // 更新本地數據
+    post.value.comments = updatedComments
+  } catch (error) {
+    console.error('Error deleting comment:', error)
   }
 }
 
@@ -118,11 +214,20 @@ const toggleImageSize = () => {
 }
 
 const formatDate = (timestamp) => {
-  const date = timestamp.toDate()
-  const options = { year: 'numeric', month: 'numeric', day: 'numeric' }
+  if (!timestamp) return ''
+  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
+  const options = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }
   return date.toLocaleDateString('zh-TW', options)
 }
 
+//作者本人刪除帳號詢問
 const confirmDelete = async () => {
   const isConfirm = confirm('確定要刪除此文章嗎？')
   const publicId = extractPublicId(post.value.imageUrl)
