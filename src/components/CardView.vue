@@ -22,8 +22,12 @@
         ></path>
       </svg>
     </div>
+
     <div class="mx-10 my-2" v-else-if="posts.length > 0">
       <div class="container mx-auto mt-10">
+        <div v-if="searchStore.searchQuery" class="mb-10 ml-2 text-xl font-medium text-zinc-800">
+          以下是包含 " {{ searchStore.searchQuery }} "的文章 :
+        </div>
         <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
           <div v-for="post in posts" :key="post.id">
             <RouterLink :to="{ name: 'StoryView', params: { id: post.id } }">
@@ -113,9 +117,12 @@ const fetchPosts = async (isLoadMore = false) => {
         const filteredPosts = allPosts.filter((post) => {
           const productName = (post.product || '').toLowerCase()
           const title = (post.title || '').toLowerCase()
+          const creater = (post.creater || '').toLowerCase()
+
           return (
             productName.includes(searchStore.searchQuery.toLowerCase()) ||
-            title.includes(searchStore.searchQuery.toLowerCase())
+            title.includes(searchStore.searchQuery.toLowerCase()) ||
+            creater.includes(searchStore.searchQuery.toLowerCase())
           )
         })
 

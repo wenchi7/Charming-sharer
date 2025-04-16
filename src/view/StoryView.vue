@@ -40,7 +40,8 @@
         <button
           type="button"
           @click="confirmDelete"
-          class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer"
+          :disabled="deletePost"
+          class="bg-red-400 mr-6 px-2 py-1 rounded-md border border-stone-700 hover:bg-red-600 cursor-pointer disabled:bg-gray-400"
         >
           刪除
         </button>
@@ -71,7 +72,13 @@
         <div v-for="comment in post.comments" :key="comment.id" class="border-b pb-4">
           <div class="flex justify-between items-start">
             <div class="flex items-center justify-between w-full">
-              <p class="font-bold">{{ comment.userName }}</p>
+              <div class="flex">
+                <div v-if="comment.isAuthor" class="text-indigo-500 flex font-semibold">
+                  <p>作者 ：</p>
+                  {{ comment.userName }}
+                </div>
+                <div v-else class="font-semibold">{{ comment.userName }} :</div>
+              </div>
               <div>
                 <p class="relative text-gray-600 text-sm">{{ formatDate(comment.createdAt) }}</p>
                 <button
@@ -124,6 +131,7 @@ const router = useRouter()
 const route = useRoute()
 const post = ref(null)
 const isClickImage = ref(false)
+const deletePost = ref(false)
 const isAuthor = ref(false)
 const authStore = useAuthStore()
 const newComment = ref('')
@@ -151,10 +159,11 @@ const fetchPost = async () => {
     if (post.value.viewer === undefined) {
       post.value.viewer = 0
     }
+    isAuthor.value = authStore.user.id && post.value && authStore.user.id === post.value.authorId
+
     await updateDoc(postRef, {
       viewer: increment(1),
     })
-    isAuthor.value = authStore.user.id && post.value && authStore.user.id === post.value.authorId
   } else {
     console.log('文章不存在')
   }
@@ -171,9 +180,9 @@ const addComment = async () => {
       userName: authStore.user.displayName,
       content: newComment.value,
       createdAt: new Date().toISOString(),
+      isAuthor: authStore.user.displayName === post.value.creater,
     }
     console.log('Adding comment:', comment)
-
     await updateDoc(postRef, {
       comments: [...currentComments, comment],
     })
@@ -182,6 +191,7 @@ const addComment = async () => {
     }
     post.value.comments.push(comment)
     newComment.value = ''
+
     await fetchPost()
   } catch (error) {
     console.log('error adding comment:', error)
@@ -233,8 +243,9 @@ const confirmDelete = async () => {
   const publicId = extractPublicId(post.value.imageUrl)
   console.log(post.value.imageUrl)
   console.log(publicId)
-
   if (!isConfirm) return
+  deletePost.value = true
+
   try {
     if (post.value.imageUrl && publicId) {
       const imageDeleteResult = await deleteImageFromCloudinary(publicId)
@@ -303,6 +314,7 @@ const deleteImageFromCloudinary = async (publicId) => {
     }
   }
 }
+
 onMounted(fetchPost) // 先獲取文章資料
 </script>
 

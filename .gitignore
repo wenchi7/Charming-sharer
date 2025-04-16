@@ -11,16 +11,21 @@ eslintccatche
 stylelintcatch
 
 node_modules
+node_modules/
 .DS_Store
 dist
+dist/
 dist-ssr
+build/
 coverage
 *.local
 .vite/
 .env
 .env.*
+**/.env
+**/.env.*
 package-lock.json
-/backend/
+backend/
 
 /cypress/videos/
 /cypress/screenshots/
@@ -35,4 +40,9 @@ package-lock.json
 *.sln
 *.sw?
 
+
 *.tsbuildinfo
+
+.firebase/
+.firebaserc
+tmp/

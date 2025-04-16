@@ -103,7 +103,7 @@ const fetchPersonalPost = async () => {
     console.log('Query snapshot size:', querySnapshot.size)
     posts.value = querySnapshot.docs.map((doc) => {
       const data = doc.data()
-      console.log('Post data:', data) // 添加這行
+      console.log('Post data:', data)
       return {
         id: doc.id,
         ...data,
