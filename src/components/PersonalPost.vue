@@ -87,29 +87,17 @@ const fetchPersonalPost = async () => {
     isLoading.value = true
     const postRef = collection(db, 'posts')
 
-    const allPostsSnapshot = await getDocs(collection(db, 'posts'))
-    console.log(
-      'All posts in database:',
-      allPostsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })),
-    )
-
-    console.log('current user id:', props.authorId)
+   await getDocs(collection(db, 'posts'))
 
     const q = query(postRef, where('authorId', '==', props.authorId), orderBy('createdAt', 'desc'))
     const querySnapshot = await getDocs(q)
-    console.log('Query snapshot size:', querySnapshot.size)
     posts.value = querySnapshot.docs.map((doc) => {
       const data = doc.data()
-      console.log('Post data:', data)
       return {
         id: doc.id,
         ...data,
       }
     })
-    console.log('Final posts array:', posts.value)
   } catch (error) {
     console.error('Error fetching posts:', error)
   } finally {

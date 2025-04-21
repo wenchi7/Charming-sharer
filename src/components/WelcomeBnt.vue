@@ -11,8 +11,6 @@
 </template>
 <script setup>
 import LogIn from './auth/LogIn.vue'
-
-
 </script>
 <style>
 .first-page {

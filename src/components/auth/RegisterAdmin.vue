@@ -74,7 +74,7 @@ const userRegistration = async () => {
       return
     }
   }catch(error){
-    console.error(error.message,error.code,error.stack)
+    console.error(error.message)
   }
 
     const firebaseAuth = getAuth()
@@ -102,9 +102,6 @@ alert('註冊完成！')
     }else {
       alert('註冊失敗請重新註冊！請檢查密碼是否小於6字')
     }
-    console.error('error message', error.message)
-    console.error('錯誤代碼:', error.code)
-    console.error('錯誤堆疊:', error.stack)
   }
 }
 </script>

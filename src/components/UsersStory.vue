@@ -40,13 +40,12 @@ const fetchAuthorInfo = async () => {
     const userDoc = await getDoc(doc(db, 'users', authorId.value))
     if (userDoc.exists()) {
       authorName.value = userDoc.data().name || 'User'
-      console.log(authorName)
       userFound.value = true
     } else {
       userFound.value = false
     }
   } catch (error) {
-    console.log('error author info: ', error)
+    console.log('error author info: ', error.message)
     userFound.value = false
   }
 }
@@ -54,5 +53,4 @@ const fetchAuthorInfo = async () => {
 onMounted(() => {
   fetchAuthorInfo()
 })
-console.log(authorName.value)
 </script>

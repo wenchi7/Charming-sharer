@@ -125,7 +125,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { doc, getDoc, increment, updateDoc, deleteDoc } from 'firebase/firestore'
 import LogoView from './LogoView.vue'
 import { useAuthStore } from '@/stores/authStore'
-import axios from 'axios'
+// import axios from 'axios'
 
 const router = useRouter()
 const route = useRoute()
@@ -164,8 +164,6 @@ const fetchPost = async () => {
     await updateDoc(postRef, {
       viewer: increment(1),
     })
-  } else {
-    console.log('文章不存在')
   }
 }
 //新增評論
@@ -182,7 +180,7 @@ const addComment = async () => {
       createdAt: new Date().toISOString(),
       isAuthor: authStore.user.displayName === post.value.creater,
     }
-    console.log('Adding comment:', comment)
+    // console.log('Adding comment:', comment)
     await updateDoc(postRef, {
       comments: [...currentComments, comment],
     })
@@ -194,7 +192,7 @@ const addComment = async () => {
 
     await fetchPost()
   } catch (error) {
-    console.log('error adding comment:', error)
+    console.log('error adding comment:', error.message)
   }
 }
 // 刪除自己的留言
@@ -215,7 +213,7 @@ const deleteComment = async (commentId) => {
     // 更新本地數據
     post.value.comments = updatedComments
   } catch (error) {
-    console.error('Error deleting comment:', error)
+    console.error('Error deleting comment:', error.message)
   }
 }
 
@@ -237,7 +235,7 @@ const formatDate = (timestamp) => {
   return date.toLocaleDateString('zh-TW', options)
 }
 
-//作者本人刪除帳號詢問
+//作者本人刪除文章詢問
 const confirmDelete = async () => {
   const isConfirm = confirm('確定要刪除此文章嗎？')
   const publicId = extractPublicId(post.value.imageUrl)
@@ -247,13 +245,14 @@ const confirmDelete = async () => {
   deletePost.value = true
 
   try {
-    if (post.value.imageUrl && publicId) {
-      const imageDeleteResult = await deleteImageFromCloudinary(publicId)
-      if (!imageDeleteResult.success || !imageDeleteResult) {
-        alert('圖片刪除失敗，請稍後再試')
-        return
-      }
-    }
+    // if (post.value.imageUrl && publicId) {
+    //   // const imageDeleteResult = await deleteImageFromCloudinary(publicId)
+    //   if (!imageDeleteResult.success || !imageDeleteResult) {
+    //     alert('圖片刪除失敗，請稍後再試')
+    //     deletePost.value = false
+    //     return
+    //   }
+    // }
     await deleteDoc(doc(db, 'posts', route.params.id))
 
     alert('文章已刪除')
@@ -266,54 +265,46 @@ const confirmDelete = async () => {
 const extractPublicId = (imageUrl) => {
   if (!imageUrl) return null
   try {
-    console.log('正在處理的圖片 URL:', imageUrl)
     const match = imageUrl.match(/\/upload\/v\d+\/([^/]+)/)
-    console.log('匹配結果:', match)
     if (!match) return null
-
-    // 去掉文件扩展名
+    //刪除後面的擴展名
     const publicId = match[1].replace(/\.[^/.]+$/, '')
-    console.log('提取的 publicId:', publicId)
     return publicId
   } catch (error) {
-    console.error('解析 public_id 失敗:', error)
+    console.error('解析 public_id 失敗:', error.message)
     return null
   }
 }
-const API_URL = import.meta.env.VITE_API_URL
-const deleteImageFromCloudinary = async (publicId) => {
-  try {
-    // 先测试服务是否可用
-    const testResponse = await axios.get('http://localhost:3000/api/test')
-    console.log('服务测试结果:', testResponse.data)
+// const API_URL = import.meta.env.VITE_API_URL
+// const deleteImageFromCloudinary = async (publicId) => {
+//   try {
+//       const apiKey = import.meta.env.VITE_CLOUDINARY_API_KEY
+//       const response = await axios.delete(`${API_URL}/deleteImage?publicId=${publicId}&api_key=${apiKey}`, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     })
+//     console.log('傳送到後端的 publicId:', publicId)
+//     console.log('Cloudinary 圖片刪除結果:', response.data)
 
-    // 发送删除请求
-    const response = await axios.delete(`${API_URL}/images/${publicId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    console.log('傳送到後端的 publicId:', publicId)
-    console.log('Cloudinary 圖片刪除結果:', response.data)
-
-    if (response.data.message === '圖片已刪除') {
-      return { success: true }
-    } else {
-      console.log('圖片刪除失敗:', response.data.message)
-      return { success: false, message: response.data.message }
-    }
-  } catch (error) {
-    console.log('刪除 Cloudinary 圖片失敗:', {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-    })
-    return {
-      success: false,
-      message: error.response?.data?.message || error.message,
-    }
-  }
-}
+//     if (response.data.message === '圖片已刪除') {
+//       return { success: true }
+//     } else {
+//       console.log('圖片刪除失敗:', response.data.message)
+//       return { success: false, message: response.data.message }
+//     }
+//   } catch (error) {
+//     console.log('刪除 Cloudinary 圖片失敗:', {
+//       message: error.message,
+//       status: error.response?.status,
+//       data: error.response?.data,
+//     })
+//     return {
+//       success: false,
+//       message: error.response?.data?.message || error.message,
+//     }
+//   }
+// }
 
 onMounted(fetchPost) // 先獲取文章資料
 </script>

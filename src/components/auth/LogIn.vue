@@ -52,7 +52,6 @@ const userLogIn = async () => {
   const auth = getAuth()
   try {
     const res = await signInWithEmailAndPassword(auth, user.value.email, user.value.password)
-    console.log('登入成功', res.user.displayName)
 
     const loggedInUser = {
       uid: res.user.uid,
@@ -62,7 +61,6 @@ const userLogIn = async () => {
 
     authStore.setUser(loggedInUser) // 更新 Pinia 狀態並存入 localStorage
 
-    console.log(localStorage.getItem('authUser'))
     router.push({ name: 'home' })
     authStore.initAuth()
     alert(`Welcome, ${res.user.displayName}` )

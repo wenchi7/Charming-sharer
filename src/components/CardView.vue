@@ -91,7 +91,6 @@ const checkScroll = async () => {
   // 當滾動到距離底部 100px 時觸發加載
   if (scrollHeight - scrollTop - clientHeight < 200) {
     isLoadingMore.value = true // 設置加載標記
-    console.log('觸發加載更多')
     await fetchPosts(true)
     isLoadingMore.value = false // 重置加載標記
   }
@@ -136,12 +135,10 @@ const fetchPosts = async (isLoadMore = false) => {
       let q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(postsPerPage))
 
       if (lastVisible.value) {
-        console.log('使用 startAfter 加載更多文章:', lastVisible.value.id)
         q = query(q, startAfter(lastVisible.value))
       }
 
       const querySnapshot = await getDocs(q)
-      console.log(querySnapshot)
       if (!querySnapshot.empty) {
         lastVisible.value = querySnapshot.docs[querySnapshot.docs.length - 1] ?? lastVisible.value
         hasMore.value = querySnapshot.docs.length === postsPerPage
@@ -163,7 +160,6 @@ const fetchPosts = async (isLoadMore = false) => {
   } finally {
     loading.value = false
     await nextTick()
-    console.log(' 更新後的 lastVisible:', lastVisible.value ? lastVisible.value.id : 'NULL')
   }
 }
 

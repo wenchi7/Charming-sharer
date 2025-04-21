@@ -162,10 +162,8 @@ const create = async () => {
       authorId:auth.currentUser.uid,
       viewer:1,
     })
-    console.log(docRef.id)
+    void docRef
     router.push('/home')
-    console.log(user.displayName)
-    console.log(imageUrl)
   } catch (e) {
     console.error('error message', e)
   } finally {
