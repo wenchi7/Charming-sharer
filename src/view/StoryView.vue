@@ -238,9 +238,9 @@ const formatDate = (timestamp) => {
 //作者本人刪除文章詢問
 const confirmDelete = async () => {
   const isConfirm = confirm('確定要刪除此文章嗎？')
-  const publicId = extractPublicId(post.value.imageUrl)
-  console.log(post.value.imageUrl)
-  console.log(publicId)
+  // const publicId = extractPublicId(post.value.imageUrl)
+  // console.log(post.value.imageUrl)
+  // console.log(publicId)
   if (!isConfirm) return
   deletePost.value = true
 
@@ -262,19 +262,19 @@ const confirmDelete = async () => {
   }
 }
 
-const extractPublicId = (imageUrl) => {
-  if (!imageUrl) return null
-  try {
-    const match = imageUrl.match(/\/upload\/v\d+\/([^/]+)/)
-    if (!match) return null
-    //刪除後面的擴展名
-    const publicId = match[1].replace(/\.[^/.]+$/, '')
-    return publicId
-  } catch (error) {
-    console.error('解析 public_id 失敗:', error.message)
-    return null
-  }
-}
+// const extractPublicId = (imageUrl) => {
+//   if (!imageUrl) return null
+//   try {
+//     const match = imageUrl.match(/\/upload\/v\d+\/([^/]+)/)
+//     if (!match) return null
+//     //刪除後面的擴展名
+//     const publicId = match[1].replace(/\.[^/.]+$/, '')
+//     return publicId
+//   } catch (error) {
+//     console.error('解析 public_id 失敗:', error.message)
+//     return null
+//   }
+// }
 // const API_URL = import.meta.env.VITE_API_URL
 // const deleteImageFromCloudinary = async (publicId) => {
 //   try {

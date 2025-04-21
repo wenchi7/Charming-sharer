@@ -23,7 +23,7 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: () => import('@/components/auth/RegisterAdmin.vue'),
-      meta: { requiresSideBar: true, requiresAuth: false },
+      meta: { requiresSideBar: false, requiresAuth: false },
     },
     {
       path: '/post/:id',

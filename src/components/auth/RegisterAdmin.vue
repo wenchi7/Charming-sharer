@@ -10,7 +10,7 @@
       <div class="m-1 text-lg">
         <label for="name">使用者名字：</label>
         <input
-        required
+          required
           type="string"
           id="name"
           v-model="user.name"
@@ -21,7 +21,7 @@
       <div class="m-1 text-lg">
         <label for="email">信箱：</label>
         <input
-        required
+          required
           type="email"
           id="email"
           v-model="user.email"
@@ -32,7 +32,7 @@
       <div class="m-1 text-lg">
         <label for="password">密碼：</label>
         <input
-        required
+          required
           type="password"
           id="password"
           v-model="user.password"
@@ -40,7 +40,11 @@
           class="placeholder:text-sm pl-2"
         />
       </div>
-      <button type="submit" class="w-32 p-2 rounded-lg bg-yellow-200">註冊</button>
+      <div class="flex justify-around w-full pl-5" >
+        <RouterLink to="/" class="w-32 p-2 rounded-lg bg-red-400 text-center">返回</RouterLink>
+        <button :disabled="isLoading" type="submit" class="w-32 p-2 rounded-lg bg-yellow-200 disabled:bg-gray-400">註冊</button>
+
+      </div>
     </form>
   </div>
 </template>
@@ -50,32 +54,36 @@ import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { db } from '@/backend/firebase'
-import { collection,query, where, getDocs, setDoc, doc } from 'firebase/firestore'
+import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore'
+
 const router = useRouter()
 const user = ref({
   name: '',
   email: '',
   password: '',
 })
-
+const isLoading = ref(false)
 const userRegistration = async () => {
+  isLoading.value = true
   try {
     if (user.value.password.length < 6) {
       alert('密碼長度必須大於6個字元')
+      isLoading.value = false
       return
     }
-    try{
-    const userRef = collection(db, 'users')
-    const q = query(userRef, where('name', '==', user.value.name.trim()))
-    const querySnapshot = await getDocs(q)
+    try {
+      const userRef = collection(db, 'users')
+      const q = query(userRef, where('name', '==', user.value.name.trim()))
+      const querySnapshot = await getDocs(q)
 
-    if(!querySnapshot.empty){
-      alert('使用者名稱已被使用，請選擇其他名稱')
-      return
+      if (!querySnapshot.empty) {
+        alert('使用者名稱已被使用，請選擇其他名稱')
+        isLoading.value = false
+        return
+      }
+    } catch (error) {
+      console.error(error.message)
     }
-  }catch(error){
-    console.error(error.message)
-  }
 
     const firebaseAuth = getAuth()
     const res = await createUserWithEmailAndPassword(
@@ -88,18 +96,18 @@ const userRegistration = async () => {
     })
 
     const userDocRef = doc(db, 'users', res.user.uid)
-    await setDoc(userDocRef,{
+    await setDoc(userDocRef, {
       name: user.value.name,
       email: user.value.email,
     })
-alert('註冊完成！')
+    alert('註冊完成！')
     router.push('/')
   } catch (error) {
-    if(error.code === 'auth/email-already-in-use') {
-      alert ('此信箱已被註冊過，請嘗試其他帳號')
-    }else if(error.code === 'auth/invalid-email'){
+    if (error.code === 'auth/email-already-in-use') {
+      alert('此信箱已被註冊過，請嘗試其他帳號')
+    } else if (error.code === 'auth/invalid-email') {
       alert('email格式錯誤')
-    }else {
+    } else {
       alert('註冊失敗請重新註冊！請檢查密碼是否小於6字')
     }
   }

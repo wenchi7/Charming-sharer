@@ -64,7 +64,6 @@ const userLogIn = async () => {
     router.push({ name: 'home' })
     authStore.initAuth()
     alert(`Welcome, ${res.user.displayName}` )
-console.log(authStore.user.id)
  // 檢查是否有儲存
   } catch (error) {
     alert('登入失敗！請檢查帳號密碼')

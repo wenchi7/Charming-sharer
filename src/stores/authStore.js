@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { db } from "@/backend/firebase";
 import { doc, deleteDoc} from "firebase/firestore";
 import { ref, watch } from "vue";
+
 export const useAuthStore = defineStore('auth',()=>{
 
     const user = ref(JSON.parse(localStorage.getItem("authUser")) || null)
@@ -61,14 +62,15 @@ export const useAuthStore = defineStore('auth',()=>{
             await deleteDoc(userDocRef)
             await currentUser.delete()
             localStorage.clear() // 清除 localStorage
-            console.log('帳號已被刪除')
+            alert('帳號已被刪除')
           } else {
-            console.log('密碼未輸入，操作取消')
+            alert('密碼未輸入，操作取消')
           }
           } else {
-          console.log('用戶未登入')
+          alert('用戶未登入')
           }
         }catch (error) {
+          alert('帳號刪除失敗，請稍後再重試')
           console.error('帳號刪除失敗:', error.message)
           }
       }
