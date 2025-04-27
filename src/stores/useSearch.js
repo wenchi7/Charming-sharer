@@ -1,11 +1,12 @@
-import { defineStore } from "pinia"
-export const useSearchStore = defineStore('search', {
-  state: () => ({
-    searchQuery: '',
-  }),
-  actions: {
-    setSearchQuery(query) {
-      this.searchQuery = query
-    },
-  },
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+export const useSearchStore = defineStore('search', () => {
+  const searchQuery = ref('')
+  function setSearchQuery(query) {
+    searchQuery.value = query
+  }
+  return {
+    searchQuery,
+    setSearchQuery,
+  }
 })
