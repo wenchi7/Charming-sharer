@@ -1,7 +1,6 @@
 <template>
   <div>
     <form
-
       class="flex flex-col justify-center items-center gap-8 w-60 h-auto"
       @submit.prevent="userLogIn"
     >
@@ -36,7 +35,6 @@
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-// import { useUserStore } from '@/stores/userStore'
 import { useAuthStore } from '@/stores/authStore'
 
 const user = ref({
@@ -47,9 +45,9 @@ const user = ref({
 const router = useRouter()
 const authStore = useAuthStore()
 
-
 const userLogIn = async () => {
   const auth = getAuth()
+
   try {
     const res = await signInWithEmailAndPassword(auth, user.value.email, user.value.password)
 
@@ -60,11 +58,13 @@ const userLogIn = async () => {
     }
 
     authStore.setUser(loggedInUser) // 更新 Pinia 狀態並存入 localStorage
-
     router.push({ name: 'home' })
-    authStore.initAuth()
-    alert(`Welcome, ${res.user.displayName}` )
- // 檢查是否有儲存
+    // authStore.initAuth()
+
+    alert(`Welcome, ${res.user.displayName}`)
+    user.value.password = ''
+
+    // 檢查是否有儲存
   } catch (error) {
     alert('登入失敗！請檢查帳號密碼')
     console.log(error)
@@ -74,5 +74,4 @@ const userLogIn = async () => {
 const goToRegister = () => {
   router.push('/register')
 }
-
 </script>

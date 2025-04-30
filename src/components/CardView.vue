@@ -88,13 +88,14 @@ const checkScroll = async () => {
   const scrollTop = document.scrollingElement.scrollTop
   const clientHeight = document.scrollingElement.clientHeight
 
-  // 當滾動到距離底部 100px 時觸發加載
+  // 當滾動到距離底部 200px 時觸發加載
   if (scrollHeight - scrollTop - clientHeight < 200) {
-    isLoadingMore.value = true // 設置加載標記
+    isLoadingMore.value = true
     await fetchPosts(true)
-    isLoadingMore.value = false // 重置加載標記
+    isLoadingMore.value = false
   }
 }
+
 const fetchPosts = async (isLoadMore = false) => {
   try {
     if (!isLoadMore) {
@@ -167,10 +168,6 @@ const fetchPosts = async (isLoadMore = false) => {
 watch(
   () => searchStore.searchQuery,
   () => {
-    // 重置狀態並重新加載
-    posts.value = []
-    lastVisible.value = null
-    hasMore.value = true
     fetchPosts()
   },
   { immediate: true },

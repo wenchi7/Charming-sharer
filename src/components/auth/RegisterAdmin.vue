@@ -40,10 +40,15 @@
           class="placeholder:text-sm pl-2"
         />
       </div>
-      <div class="flex justify-around w-full pl-5" >
+      <div class="flex justify-around w-full pl-5">
         <RouterLink to="/" class="w-32 p-2 rounded-lg bg-red-400 text-center">返回</RouterLink>
-        <button :disabled="isLoading" type="submit" class="w-32 p-2 rounded-lg bg-yellow-200 disabled:bg-gray-400">註冊</button>
-
+        <button
+          :disabled="isLoading"
+          type="submit"
+          class="w-32 p-2 rounded-lg bg-yellow-200 disabled:bg-gray-400"
+        >
+          註冊
+        </button>
       </div>
     </form>
   </div>
@@ -85,12 +90,8 @@ const userRegistration = async () => {
       console.error(error.message)
     }
 
-    const firebaseAuth = getAuth()
-    const res = await createUserWithEmailAndPassword(
-      firebaseAuth,
-      user.value.email,
-      user.value.password,
-    )
+    const auth = getAuth()
+    const res = await createUserWithEmailAndPassword(auth, user.value.email, user.value.password)
     await updateProfile(res.user, {
       displayName: user.value.name,
     })
