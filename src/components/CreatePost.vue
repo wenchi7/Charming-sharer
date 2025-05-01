@@ -69,10 +69,11 @@
           <div class="flex justify-end absolute right-0 -bottom-14">
             <button
               type="submit"
-              :disabled="photoIsLoading "
+              :disabled="photoIsLoading"
               class="border border-gray-900 px-2 py-1 rounded bg-amber-200 cursor-pointer disabled:bg-gray-400"
-            >share</button>
-
+            >
+              share
+            </button>
           </div>
         </form>
       </div>
@@ -83,7 +84,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { db } from '@/backend/firebase.js'
-import { collection, addDoc, serverTimestamp} from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { useRouter } from 'vue-router'
 import { getAuth } from 'firebase/auth'
 import LogoView from '@/view/LogoView.vue'
@@ -98,39 +99,33 @@ const photoIsLoading = ref(false)
 const auth = getAuth()
 const user = auth.currentUser
 
-
 const handleFileChange = async (event) => {
   // event.target指的是input type=file的元素,files是檔案的陣列，event.target.files[0]是要拿這個input裡的檔案列的第1個
   const selectedFile = event.target.files[0]
-  if(selectedFile){
+  if (selectedFile) {
     const reader = new FileReader()
     reader.onload = () => {
       imageUrl.value = reader.result
     }
     reader.readAsDataURL(selectedFile)
   }
-
 }
 
-const uploadImage = async(file)=> {
-
+const uploadImage = async (file) => {
   //不然就創建一個FormData物件並追加資料
   const formData = new FormData()
   formData.append('file', file)
   formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
-  formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME)
 
   photoIsLoading.value = true
 
-
-   //使用axios發送post請求並等待結果
+  //使用axios發送post請求並等待結果
   try {
     const response = await axios.post(
       `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
       formData,
     )
     return response.data.secure_url
-
   } catch (error) {
     console.error('Upload failed:', error.message)
     return null
@@ -138,16 +133,14 @@ const uploadImage = async(file)=> {
 }
 
 const create = async () => {
-
-  if(photoIsLoading.value) return
-  if(!imageUrl.value){
+  if (photoIsLoading.value) return
+  if (!imageUrl.value) {
     alert('請選擇並上傳照片！')
     return
   }
   try {
-
     const imageUrlFromCloudinary = await uploadImage(photo.value.files[0])
-    if(!imageUrlFromCloudinary){
+    if (!imageUrlFromCloudinary) {
       alert('上傳失敗，請再試一次')
       return
     }
@@ -158,9 +151,9 @@ const create = async () => {
       description: description.value,
       imageUrl: imageUrlFromCloudinary,
       createdAt: serverTimestamp(),
-      creater:user.displayName,
-      authorId:auth.currentUser.uid,
-      viewer:1,
+      creater: user.displayName,
+      authorId: auth.currentUser.uid,
+      viewer: 1,
     })
     void docRef
     router.push('/home')
@@ -171,9 +164,10 @@ const create = async () => {
     product.value = ''
     description.value = ''
     imageUrl.value = ''
+
+    photoIsLoading.value = false
   }
 }
-
 
 const cancelPhoto = () => {
   imageUrl.value = null
