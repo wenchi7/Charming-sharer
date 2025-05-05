@@ -59,7 +59,7 @@ const userLogIn = async () => {
 
     authStore.setUser(loggedInUser) // 更新 Pinia 狀態並存入 localStorage
     router.push({ name: 'home' })
-    // authStore.initAuth()
+    authStore.initAuth()
 
     alert(`Welcome, ${res.user.displayName}`)
     user.value.password = ''
