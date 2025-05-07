@@ -73,7 +73,7 @@
 ## 開發工具與部署
 - **Vite**
   <br>
-  適用Vue搭配Vite快速建置專案，提供即時模組熱重載與高效能打包能力。
+  使用Vue搭配Vite快速建置專案，提供即時模組熱重載與高效能打包能力。
 - **Firebase Hosting**
   <br>
    透過 Firebase Hosting進行前後端部署。
