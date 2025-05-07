@@ -7,7 +7,7 @@
 <br>
 在資訊爆炸的時代，希望美妝愛好者有一個可以輕鬆找到自己想要什麼的空間。
 <br>
-風格樣式以美式復古色系為主軸，參考美妝品牌ColourPop (https://colourpop.com)。
+風格樣式以美式復古色系為主軸，參考美妝品牌ColourPop ( https://colourpop.com )。
 <br>
 
 ## 索引
