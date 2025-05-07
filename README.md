@@ -1,35 +1,19 @@
 # Charming-Sharer
 
-This template should help get you started developing with Vue 3 in Vite.
+![Website Screenshot](src/assets/web-snapshot.png)
 
-## Recommended IDE Setup
+<br>
+因為喜歡美妝，所以選擇打造一個美妝分享的平台。
+在資訊爆炸的時代，希望美妝愛好者有一個可以輕鬆找到自己想要什麼的空間。
+風格樣式以美式復古色系為主軸，參考美妝品牌ColourPop(https://colourpop.com)。
+<br>
+## 索引
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- [功能列表](#功能列表)
+- [使用技能與第三方套件](#使用技能與第三方套件)
+- [開發工具與部署](#開發工具與部署)
+- [測試登入帳號](#測試登入帳號)
+- [尚未完成與注意事項](#尚未完成與注意事項)
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+<br>
+## 功能列表
